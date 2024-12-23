@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT i.id, i.name, notes, i.directory_id as directory_id\n                FROM Image as i\n                INNER JOIN Labeling as l ON l.image_id = i.id\n                WHERE l.label_id == ?\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "notes",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "directory_id",
+        "ordinal": 3,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "8663dd16d89acc3b781cca5e12c17058d3075738ddc684f7120c47c574c0a085"
+}

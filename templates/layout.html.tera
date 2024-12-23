@@ -1,0 +1,25 @@
+{% block variables %} {% set title = "" %} {% endblock variables %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <title>{{ title }} | Photolabeler</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Remove cdn on production -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    {# <script
+      src="https://unpkg.com/htmx.org@2.0.1"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" type="text/css" href="/assets/styles.css" /> #}
+  </head>
+  <body class="w-screen h-screen bg-base-100">
+  </body>
+</html>

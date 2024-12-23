@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO Image\n            (directory_id, name, notes)\n            VALUES (?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "e38b1f8a85771f4ee9c1466ca498af0c8a874dd653bdab39a563283cd1b56a73"
+}
