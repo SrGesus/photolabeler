@@ -1,5 +1,3 @@
-use std::{env, path::Path};
-
 use sqlx::{migrate, SqlitePool};
 
 fn main() {

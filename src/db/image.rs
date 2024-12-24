@@ -1,7 +1,10 @@
-use sqlx::{query, query_as, sqlite::SqliteQueryResult, Error, Pool, Sqlite};
+use std::path::{Path, PathBuf};
+
+use sqlx::{query, query_as, sqlite::SqliteQueryResult, Error};
 
 use super::Database;
 
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct Image {
     id: i64,
     directory_id: i64,
@@ -18,6 +21,15 @@ impl Image {
             notes,
         }
     }
+    pub fn id(&self) -> &i64 {
+        &self.id
+    }
+    pub fn name(&self) -> &String {
+        &self.name
+    }
+    pub fn notes(&self) -> &Option<String> {
+        &self.notes
+    }
     pub async fn insert(&self, Database(pool): &Database) -> Result<SqliteQueryResult, Error> {
         query!(
             r#"INSERT INTO Image
@@ -30,11 +42,22 @@ impl Image {
         .execute(pool)
         .await
     }
+    pub async fn delete(&self, Database(pool): &Database) -> Result<SqliteQueryResult, Error> {
+        query("DELETE FROM Image WHERE id = ?")
+            .bind(self.id)
+            .execute(pool)
+            .await
+    }
 
     pub async fn get_all(Database(pool): &Database) -> Result<Vec<Image>, Error> {
-        query_as!(Image, "SELECT * FROM Image")
-            .fetch_all(pool)
-            .await
+        query_as!(
+            Image,
+            r#"SELECT i.id, i.directory_id, i.name, i.notes
+                FROM Image as i
+                INNER JOIN Directory as d ON i.directory_id = d.id"#,
+        )
+        .fetch_all(pool)
+        .await
     }
 
     pub async fn get_by_directory(
@@ -61,6 +84,7 @@ impl Image {
             Image,
             r#"SELECT i.id, i.name, notes, i.directory_id as directory_id
                 FROM Image as i
+                INNER JOIN Directory as d ON i.directory_id = d.id
                 INNER JOIN Labeling as l ON l.image_id = i.id
                 WHERE l.label_id == ?
             "#,

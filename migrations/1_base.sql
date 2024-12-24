@@ -26,10 +26,10 @@ CREATE TABLE IF NOT EXISTS Label (
 
 CREATE TABLE IF NOT EXISTS Labeling (
   label_id INTEGER NOT NULL
-    REFERENCES Label (rowid)
+    REFERENCES Label (id)
     ON DELETE CASCADE,
   image_id INTEGER NOT NULL
-    REFERENCES Image (rowid)
+    REFERENCES Image (id)
     ON DELETE CASCADE,
   PRIMARY KEY (label_id, image_id)
 );

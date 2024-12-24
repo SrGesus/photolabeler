@@ -2,6 +2,7 @@ use sqlx::{query, query_as, sqlite::SqliteQueryResult, Error, Pool, Sqlite};
 
 use super::Database;
 
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct Directory {
     id: i64,
     name: String,
@@ -20,6 +21,11 @@ impl Directory {
     }
     pub fn name(&self) -> &String {
         &self.name
+    }
+    pub async fn get_by_id(Database(pool): &Database, id: i64) -> Result<Directory, Error> {
+        query_as!(Directory, "SELECT * FROM Directory WHERE id = ?", id)
+            .fetch_one(pool)
+            .await
     }
     pub async fn get_all(Database(pool): &Database) -> Result<Vec<Directory>, Error> {
         query_as!(Directory, "SELECT * FROM Directory")
