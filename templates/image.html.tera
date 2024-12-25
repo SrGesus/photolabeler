@@ -1,0 +1,23 @@
+{% extends "layout.html.tera" %} {% block variables %} {% set title = "Image" %}
+{% endblock variables %} {% block body %} 
+<div class="lg:card-side card max-w-3xl mx-auto shadow-lg bg-base-100">
+  <a href="{{ "/i/" ~ image.id }}">
+      <img src="{{ "/i/" ~ image.id }}" class="w-full">
+  </a>
+  <div class="card-body">
+      <h1 class="card-title text-2xl font-bold">{{ image.name }}</h1>
+      <p class="text-base mt-4">{{ image.notes }}</p>
+      <div class="mt-6">
+          <h2 class="text-lg font-semibold">Labels</h2>
+          <div class="flex flex-wrap gap-2 mt-2">
+              {% for label in labels %}
+                  <span class="badge badge-primary">{{ label.name }}</span>
+              {% else %}
+                  <p class="text-gray-500">No labels available.</p>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+</div>
+
+{% endblock body %}

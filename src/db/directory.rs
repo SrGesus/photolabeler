@@ -22,9 +22,9 @@ impl Directory {
     pub fn name(&self) -> &String {
         &self.name
     }
-    pub async fn get_by_id(Database(pool): &Database, id: i64) -> Result<Directory, Error> {
+    pub async fn get_by_id(Database(pool): &Database, id: i64) -> Result<Option<Directory>, Error> {
         query_as!(Directory, "SELECT * FROM Directory WHERE id = ?", id)
-            .fetch_one(pool)
+            .fetch_optional(pool)
             .await
     }
     pub async fn get_all(Database(pool): &Database) -> Result<Vec<Directory>, Error> {
@@ -57,7 +57,6 @@ impl Directory {
             self.path,
             self.id
         )
-        .bind(self.id)
         .execute(pool)
         .await
     }

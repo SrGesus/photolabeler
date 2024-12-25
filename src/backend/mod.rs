@@ -31,14 +31,14 @@ pub async fn post_image(
     Path(dir): Path<i64>,
     mut multipart: Multipart,
 ) {
-    let dir = Directory::get_by_id(&database, dir).await.unwrap();
+    let dir = Directory::get_by_id(&database, dir).await.unwrap().unwrap();
     delete_missing(&database, &dir).await;
     while let Some(field) = multipart.next_field().await.unwrap() {
         let original_name = field.file_name().unwrap().to_string();
         let data = field.bytes().await.unwrap();
 
         println!("Length of `{}` is {} bytes", original_name, data.len());
-        let (original_name, original_extension) = original_name.rsplit_once('.').unwrap();
+        let (original_left, original_extension) = original_name.rsplit_once('.').unwrap();
 
         let mut name = original_name.to_owned();
         let mut tries = 1;
@@ -47,7 +47,7 @@ pub async fn post_image(
             .await
         {
             tries += 1;
-            name = format!("{original_name}_{tries}.{original_extension}");
+            name = format!("{original_left}_{tries}.{original_extension}");
             tracing::info!("Failed, trying again with new name={}", &name);
         }
 

@@ -4,12 +4,12 @@
   class="columns-2 sm:columns-3 md:columns-4 lg:columns-6 gap-4 space-y-4"
 >
   {% for image in images %}
-  <div class="card shadow-lg">
-    <figure>
-      <img src="{{ "/i/" ~ image.directory_id ~ "/" ~ image.name }}">
-    </figure>
+  <div class="break-inside-avoid card shadow-lg" title="{{ image.name }}">
+    <a href="{{ "/image/" ~ image.id }}">
+      <img src="{{ "/i/" ~ image.id }}" class="rounded-t-xl">
+    </a>
     <div class="card-body">
-      <h2 class="card-title truncate block" title="{{ image.name }}">
+      <h2 class="card-title truncate block">
         {{ image.name }}
       </h2>
     </div>

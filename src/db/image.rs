@@ -1,5 +1,3 @@
-use std::path::{Path, PathBuf};
-
 use sqlx::{query, query_as, sqlite::SqliteQueryResult, Error};
 
 use super::Database;
@@ -24,13 +22,16 @@ impl Image {
     pub fn id(&self) -> &i64 {
         &self.id
     }
-    pub fn name(&self) -> &String {
+    pub fn directory_id(&self) -> &i64 {
+        &self.directory_id
+    }
+    pub fn name(&self) -> &str {
         &self.name
     }
     pub fn notes(&self) -> &Option<String> {
         &self.notes
     }
-    pub async fn insert(&self, Database(pool): &Database) -> Result<SqliteQueryResult, Error> {
+    pub async fn insert(self, Database(pool): &Database) -> Result<SqliteQueryResult, Error> {
         query!(
             r#"INSERT INTO Image
             (directory_id, name, notes)
@@ -42,6 +43,7 @@ impl Image {
         .execute(pool)
         .await
     }
+
     pub async fn delete(&self, Database(pool): &Database) -> Result<SqliteQueryResult, Error> {
         query("DELETE FROM Image WHERE id = ?")
             .bind(self.id)
@@ -49,15 +51,34 @@ impl Image {
             .await
     }
 
-    pub async fn get_all(Database(pool): &Database) -> Result<Vec<Image>, Error> {
-        query_as!(
-            Image,
-            r#"SELECT i.id, i.directory_id, i.name, i.notes
-                FROM Image as i
-                INNER JOIN Directory as d ON i.directory_id = d.id"#,
+    pub async fn update(&self, Database(pool): &Database) -> Result<SqliteQueryResult, Error> {
+        query!(
+            r#"UPDATE Image
+                SET directory_id = ?, name = ?, notes = ?
+                WHERE id = ?
+            "#,
+            self.directory_id,
+            self.name,
+            self.notes,
+            self.id
         )
-        .fetch_all(pool)
+        .execute(pool)
         .await
+    }
+
+    pub async fn get_by_id(
+        Database(pool): &Database,
+        image_id: i64,
+    ) -> Result<Option<Image>, Error> {
+        query_as!(Image, "SELECT * FROM Image WHERE id = ?", image_id)
+            .fetch_optional(pool)
+            .await
+    }
+
+    pub async fn get_all(Database(pool): &Database) -> Result<Vec<Image>, Error> {
+        query_as!(Image, "SELECT * FROM Image",)
+            .fetch_all(pool)
+            .await
     }
 
     pub async fn get_by_directory(

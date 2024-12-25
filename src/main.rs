@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 mod backend;
 mod db;
 mod frontend;
+mod error;
 
 #[derive(Clone)]
 struct AppState(Arc<Database>);
@@ -46,7 +47,8 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(frontend::homepage))
-        .route("/i/:dir/:image", get(frontend::serve_images))
+        .route("/i/:image_id", get(frontend::serve_images))
+        .route("/image/:image_id", get(frontend::image))
         .nest("/api", api)
         .with_state(state);
 
