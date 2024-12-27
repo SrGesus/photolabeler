@@ -12,6 +12,7 @@ use sqlx::{
     Connection, Error, Executor, Pool, Sqlite, SqliteConnection, SqlitePool,
 };
 
+#[derive(Clone)]
 pub struct Database(pub(crate) Pool<Sqlite>);
 
 impl Database {

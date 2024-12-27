@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS Directory (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  parent_id INTEGER REFERENCES Directory (id),
   name TEXT NOT NULL, 
   path TEXT NOT NULL UNIQUE
 );
@@ -12,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Image (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   directory_id INTEGER NOT NULL,
   name TEXT NOT NULL,
-  notes TEXT,
+  notes TEXT NOT NULL,
   UNIQUE (directory_id, name),
   FOREIGN KEY (directory_id)
     REFERENCES Directory (id)

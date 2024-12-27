@@ -16,6 +16,8 @@ tokio = { workspace = true }
 dotenvy = { workspace = true }
 tokio-util = { version = "0.7.13", features = ["io"] }
 mime_guess = "2.0.5"
+thiserror = "2.0.9"
+futures = "0.3.31"
 
 [workspace.dependencies]
 sqlx = { version = "0.8.2", features = ["runtime-tokio", "sqlite", "postgres"] }

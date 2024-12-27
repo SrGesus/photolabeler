@@ -1,12 +1,93 @@
-{% extends "layout.html.tera" %} {% block variables %} {% set title = "Home" %}
-{% endblock variables %} {% block body %} 
+{% extends "layout.html.tera" %}
+
+{% block variables %}
+  {% set title = "Home" %}
+{% endblock variables %}
+
+{% block body %}
+<div class="breadcrumbs card-title mb-8 ml-4">
+  <ul>
+    <li><a href="/">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" class="size-6 stroke-current mr-1">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+      </svg>      
+      Home
+    </a></li>
+    {% for dir in dir_parents %}
+    <li><a href="{{ "/" ~ dir.id }}">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" class="size-6 stroke-current mr-1">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+      </svg>
+      {{ dir.name }}
+    </a></li>
+    {% endfor %}
+  </ul>
+</div>
+
 <div
-  class="columns-2 sm:columns-3 md:columns-4 lg:columns-6 gap-4 space-y-4"
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-4 mb-10"
 >
+  {% for directory in directories %}
+  <a class="" href="{{ "/" ~ directory.id }}">
+    <div
+      class="break-inside-avoid card card-side shadow-lg bg-base-200 hover:bg-base-300 p-4"
+      title="{{ directory.name }}"
+    >
+      <div class="flex w-1/12 mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" class="h-fill stroke-current">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+        </svg>
+      </div>
+      <h2 class="card-title">
+        {{ directory.name }}
+      </h2>
+    </div>
+  </a>
+  {% endfor %}
+  <button onclick="my_modal_1.showModal()">
+    <div
+      class="break-inside-avoid card card-side shadow-lg bg-base-200 hover:bg-base-300 p-4"
+      title="New Folder"
+    >
+      <div class="flex w-1/12 mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" class="h-fill stroke-current">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+        </svg>
+      </div>
+      <h2 class="card-title">
+        New Folder
+      </h2>
+    </div>
+  </button>
+</div>
+
+<dialog id="my_modal_1" class="modal">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Create a new folder</h3>
+    <p class="py-4">Press ESC key or click the button below to close</p>
+      <form onsubmit="setTimeout(function () { window.location.reload(); }, 10)" method="POST" action="{{ "/api/dir/" ~ dir_id}}" enctype="multipart/form-data">
+        <div class="modal-action">
+          <label class="input input-bordered flex font-bold items-center gap-2">
+            Name
+            <input name="say" id="say" type="text" class="grow font-normal" placeholder="Daisy" />
+          </label>
+          <button type="submit" class="btn">Submit</button>
+        </div>
+    </form>
+  </div>
+</dialog>
+
+<h1 class="card-title text-3xl text-left m-4 mb-8">Images</h1>
+
+<div class="m-4 columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
   {% for image in images %}
-  <div class="break-inside-avoid card shadow-lg" title="{{ image.name }}">
+  <div
+    class="bg-base-200 hover:bg-base-300 break-inside-avoid card shadow-lg"
+    title="{{ image.name }}"
+  >
     <a href="{{ "/image/" ~ image.id }}">
-      <img src="{{ "/i/" ~ image.id }}" class="rounded-t-xl">
+      <img src="{{ "/i/" ~ image.id }}"
+    class="rounded-t-xl">
     </a>
     <div class="card-body">
       <h2 class="card-title truncate block">
@@ -16,5 +97,4 @@
   </div>
   {% endfor %}
 </div>
-
 {% endblock body %}
