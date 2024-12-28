@@ -20,36 +20,6 @@ pub fn router() -> Router<AppState> {
         .nest("/dir", directory::router())
 }
 
-// #[axum::debug_handler]
-// pub async fn post_directory(
-//     State(AppState(database)): State<AppState>,
-//     Path(parent_dir_id): Path<i64>,
-//     mut multipart: Multipart,
-// ) -> impl IntoResponse {
-//     // let mut name = String::new();
-//     if let Some(field) = multipart.next_field().await.unwrap() {
-//         let name = field.text().await.unwrap();
-
-//         let parent_dir = Directory::get_by_id(&database, parent_dir_id)
-//             .await
-//             .unwrap();
-
-//         let path = path::PathBuf::from(parent_dir.unwrap().path()).join(&name);
-
-//         fs::create_dir(&path).await.unwrap();
-
-//         Directory::new(
-//             Some(parent_dir_id),
-//             name,
-//             path.to_string_lossy().into_owned(),
-//         )
-//         .insert(&database)
-//         .await
-//         .unwrap();
-//     }
-//     axum::http::StatusCode::NO_CONTENT
-// }
-
 pub async fn check_image(
     database: &Database,
     path: &path::Path,

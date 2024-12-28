@@ -38,6 +38,7 @@ pub async fn insert(
     while let Some(field) = multipart.next_field().await? {
         if field.name().is_some_and(|n| n == ("name")) {
             name = field.text().await?;
+            tracing::info!("Register name \"{name}\"");
             continue;
         }
 
