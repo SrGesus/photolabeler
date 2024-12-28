@@ -2,7 +2,7 @@ use axum::{
     body::Body,
     extract::{DefaultBodyLimit, Multipart, Path, State},
     http::{header, StatusCode},
-    response::IntoResponse,
+    response::{IntoResponse, Redirect},
     routing::{get, post},
     Form, Router,
 };
@@ -33,7 +33,7 @@ pub async fn insert(
     State(AppState(database)): State<AppState>,
     Path(dirid): Path<i64>,
     mut multipart: Multipart,
-) -> Result<StatusCode, Error> {
+) -> Result<impl IntoResponse, Error> {
     let mut name = String::new();
     while let Some(field) = multipart.next_field().await? {
         if field.name().is_some_and(|n| n == ("name")) {
@@ -78,7 +78,10 @@ pub async fn insert(
         tracing::info!("Saving file to path: {:?}", &path);
         fs::File::create(path).await?.write_all(&data).await?
     }
-    Ok(StatusCode::NO_CONTENT)
+    Ok((
+        StatusCode::FOUND,
+        Redirect::permanent(&format!("/{dirid}")),
+    ))
 }
 
 pub async fn read(

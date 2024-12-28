@@ -1,13 +1,7 @@
 use axum::{extract::State, http::StatusCode, routing::post, Router};
-use futures::{future::join_all, stream::FuturesUnordered, StreamExt};
-use std::{
-    path::{self, PathBuf},
-    sync::Arc,
-};
-use tokio::{
-    fs::{self, DirEntry},
-    task::JoinSet,
-};
+use futures::{stream::FuturesUnordered, StreamExt};
+use std::path;
+use tokio::fs::{self, DirEntry};
 
 use crate::{
     db::{directory::Directory, image::Image, Database},
@@ -15,13 +9,15 @@ use crate::{
     AppState,
 };
 
+pub(crate) mod directory;
 pub(crate) mod image;
 
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/refresh", post(refresh).get(refresh))
         // .route("/images", get(get_all_images))
-        .nest("/image", image::router())
+        .nest("/img", image::router())
+        .nest("/dir", directory::router())
 }
 
 // #[axum::debug_handler]
@@ -73,24 +69,26 @@ pub async fn check_directory(database: &Database, dir: Directory) -> Result<(), 
 }
 
 pub async fn delete_missing(database: &Database, dir: &Directory) -> Result<(), Error> {
-    let dir_path = path::Path::new(dir.path());
-    // Images in directory
-    let images = Image::get_by_directory(&database, dir.id()).await?;
     // Directories in directory
     let directories = Directory::get_by_parent_id(&database, dir.id()).await?;
+    let dir_path = path::Path::new(dir.path());
+
+    let mut dir_futures = directories
+        .into_iter()
+        .map(|dir| check_directory(database, dir))
+        .collect::<FuturesUnordered<_>>();
+    while let Some(res) = dir_futures.next().await {
+        res?;
+    }
+
+    // Images in directory
+    let images = Image::get_by_directory(&database, dir.id()).await?;
 
     let mut im_futures = images
         .into_iter()
         .map(|im| check_image(database, dir_path, im))
         .collect::<FuturesUnordered<_>>();
     while let Some(res) = im_futures.next().await {
-        res?;
-    }
-    let mut dir_futures = directories
-        .into_iter()
-        .map(|dir| check_directory(database, dir))
-        .collect::<FuturesUnordered<_>>();
-    while let Some(res) = dir_futures.next().await {
         res?;
     }
     Ok(())
@@ -135,6 +133,9 @@ pub async fn add_missing_file(
 pub async fn add_missing(database: &Database, directory: Directory) -> Result<(), Error> {
     let mut v = vec![directory];
     while let Some(dir) = v.pop() {
+        if fs::metadata(dir.path()).await.is_err() {
+            continue;
+        }
         // Insert files from directory into database
         let mut entries = fs::read_dir(dir.path()).await?;
         let mut files = Vec::new();
@@ -148,7 +149,7 @@ pub async fn add_missing(database: &Database, directory: Directory) -> Result<()
             .collect::<FuturesUnordered<_>>();
 
         while let Some(res) = futures.next().await {
-            if let Some(new_dir) = res? {
+            if let Ok(Some(new_dir)) = res {
                 v.push(new_dir);
             }
         }

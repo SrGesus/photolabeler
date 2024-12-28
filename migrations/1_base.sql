@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS Directory (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  parent_id INTEGER REFERENCES Directory (id),
+  parent_id INTEGER
+    REFERENCES Directory (id)
+    ON DELETE CASCADE,
   name TEXT NOT NULL, 
   path TEXT NOT NULL UNIQUE
 );

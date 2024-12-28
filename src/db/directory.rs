@@ -4,12 +4,12 @@ use crate::error::Error;
 
 use super::Database;
 
-#[derive(serde::Serialize, serde::Deserialize, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Directory {
     id: i64,
-    parent_id: Option<i64>,
-    name: String,
-    path: String,
+    pub parent_id: Option<i64>,
+    pub name: String,
+    pub path: String,
 }
 
 impl Directory {
@@ -24,10 +24,10 @@ impl Directory {
     pub fn id(&self) -> i64 {
         self.id
     }
-    pub fn path(&self) -> &String {
+    pub fn path(&self) -> &str {
         &self.path
     }
-    pub fn name(&self) -> &String {
+    pub fn name(&self) -> &str {
         &self.name
     }
     pub async fn get_all(Database(pool): &Database) -> Result<Vec<Directory>, Error> {
