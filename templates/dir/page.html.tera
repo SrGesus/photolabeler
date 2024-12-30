@@ -1,0 +1,181 @@
+{% import "dir/breadcrumb.html.tera" as breadcrumb %}
+{% import "img/image-card.html.tera" as card %}
+{% extends "layout.html.tera" %}
+
+{% block variables %}
+  {% set title = "Home" %}
+{% endblock variables %}
+
+{% block body %}
+{{ breadcrumb::breadcrumb(dir_trail=dir_parents) }}
+
+<div
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-4 mb-10"
+>
+  {% for directory in directories %}
+  <a class="" href="/{{ directory.id }}">
+    <div
+      class="break-inside-avoid card card-side shadow-lg bg-base-200 hover:bg-base-300 p-4"
+      title="{{ directory.name }}"
+    >
+      <div class="flex w-1/12 mr-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          class="h-fill stroke-current"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
+          />
+        </svg>
+      </div>
+      <h2 class="card-title">
+        {{ directory.name }}
+      </h2>
+    </div>
+  </a>
+  {% endfor %}
+  <button onclick="new_folder_modal.showModal()">
+    <div
+      class="break-inside-avoid card card-side shadow-lg bg-base-200 hover:bg-base-300 p-4"
+      title="New Folder"
+    >
+      <div class="flex w-1/12 mr-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          class="h-fill stroke-current"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
+          />
+        </svg>
+      </div>
+      <h2 class="card-title">New Folder</h2>
+    </div>
+  </button>
+</div>
+
+<dialog id="new_folder_modal" class="modal">
+  <div class="modal-box">
+    {% if dir_id > 0 %}
+    <h3 class="text-lg font-bold">Create a new folder</h3>
+    <form method="POST" action="/dir/insert/{{ dir_id }}">
+      <div class="modal-action">
+        <label class="input input-bordered flex font-bold items-center gap-2">
+          Name
+          <input
+            name="path"
+            id="path"
+            type="text"
+            class="grow font-normal"
+            placeholder="Daisy"
+          />
+        </label>
+        <button type="submit" class="btn">Submit</button>
+      </div>
+    </form>
+    {% else %}
+    <h3 class="text-lg font-bold">Register a new folder</h3>
+    <form
+      onsubmit="setTimeout(function () { window.location.reload(); }, 10)"
+      method="POST"
+      action="/dir/insert"
+    >
+      <div class="modal-action">
+        <label class="input input-bordered flex font-bold items-center gap-2">
+          Path
+          <input
+            name="path"
+            id="path"
+            type="text"
+            class="grow font-normal"
+            placeholder="Daisy"
+          />
+        </label>
+        <button type="submit" class="btn">Submit</button>
+      </div>
+    </form>
+    {% endif %}
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+{% if dir_id > 0 %}
+<dialog id="new_image_modal" class="modal">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Upload images</h3>
+    <form
+      method="POST"
+      action="/i/insert/{{ dir_id }}"
+      enctype="multipart/form-data"
+    >
+      <div class="modal-action flex-col px-4 pb-4 gap-4">
+        <div></div>
+        <label
+          class="input input-bordered w-full flex font-bold items-center gap-2"
+        >
+          Name
+          <input name="name" id="name" type="text" class="grow font-normal" />
+        </label>
+        <input
+          name="files"
+          id="files"
+          type="file"
+          class="file-input file-input-bordered w-full"
+          multiple
+        />
+        <button type="submit" class="btn w-full">Submit</button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+{% endif %}
+
+<h1 class="card-title text-3xl text-left m-4 mb-8">Images</h1>
+
+<div
+  class="m-4 columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4"
+>
+  {% if dir_id > 0 %}
+  <button
+    class="bg-base-200 w-full hover:bg-base-300 break-inside-avoid card shadow-lg"
+    title="New Image"
+    onclick="new_image_modal.showModal()"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="w-full"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+      />
+    </svg>
+    <div class="card-body">
+      <h2 class="card-title truncate block">New Image</h2>
+    </div>
+  </button>
+  {% endif %} {% for image in images %}
+  {{ card::image_card(image=image) }}
+  {% endfor %}
+</div>
+{% endblock body %}

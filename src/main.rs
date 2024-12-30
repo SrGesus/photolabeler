@@ -47,10 +47,9 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(frontend::homepage))
-        .route("/i/:image_id", get(frontend::serve_images))
         .route("/:directory_id", get(frontend::images))
         .route("/image/:image_id", get(frontend::image))
-        .nest("/api", api)
+        .nest("/", api)
         .with_state(state);
 
     // Start up our server

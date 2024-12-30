@@ -16,8 +16,8 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/refresh", post(refresh).get(refresh))
         // .route("/images", get(get_all_images))
-        .nest("/img", image::router())
-        .nest("/dir", directory::router())
+        .nest("/i", image::router())
+        .nest("/d", directory::router())
 }
 
 pub async fn check_image(

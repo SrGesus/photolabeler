@@ -1,0 +1,16 @@
+{% macro image_card(image) %}
+<div
+  id="{{ image.id }}"
+  title="{{ image.name }}"
+  class="bg-base-200 hover:bg-base-300 break-inside-avoid card shadow-lg"
+>
+  <a href="/image/{{ image.id }}">
+    <img src="/i/{{ image.id }}" class="rounded-t-xl" />
+  </a>
+  <div class="card-body">
+    <h2 class="card-title truncate block">
+      {{ image.name }}
+    </h2>
+  </div>
+</div>
+{% endmacro image_card %}

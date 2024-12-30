@@ -77,7 +77,7 @@ pub async fn homepage(State(AppState(database)): State<AppState>) -> Result<Html
     context.insert("dir_id", &0);
 
     Ok(axum::response::Html(
-        tera.render("images.html.tera", &context).unwrap(),
+        tera.render("dir/page.html.tera", &context).unwrap(),
     ))
 }
 
@@ -99,7 +99,7 @@ pub async fn images(
     context.insert("dir_parents", &parents);
     context.insert("dir_id", &directory_id);
 
-    let res = axum::response::Html(tera.render("images.html.tera", &context).unwrap());
+    let res = axum::response::Html(tera.render("dir/page.html.tera", &context).unwrap());
     tracing::info!("Finish generating for {}", directory_id);
     Ok(res)
 }
@@ -121,7 +121,8 @@ pub async fn image(
     context.insert("image", &image);
     context.insert("labels", &labels);
     context.insert("dir_parents", &parents);
+    context.insert("img_id", &image_id);
     Ok(axum::response::Html(
-        tera.render("image.html.tera", &context).unwrap(),
+        tera.render("img/page.html.tera", &context).unwrap(),
     ))
 }
