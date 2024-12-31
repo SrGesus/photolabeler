@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use axum::{
     body::Body,
     extract::{DefaultBodyLimit, Multipart, Path, State},
@@ -26,6 +28,7 @@ pub fn router() -> Router<AppState> {
         )
         .route("/update/:id", post(update))
         .route("/delete/:id", post(delete))
+        .route("/delete", post(delete_many))
         .route("/:id", get(read))
 }
 
@@ -79,10 +82,7 @@ pub async fn insert(
         tracing::info!("Saving file to path: {:?}", &path);
         fs::File::create(path).await?.write_all(&data).await?
     }
-    Ok((
-        StatusCode::FOUND,
-        Redirect::permanent(&format!("/{dirid}")),
-    ))
+    Ok((StatusCode::FOUND, Redirect::permanent(&format!("/{dirid}"))))
 }
 
 pub async fn read(
@@ -109,7 +109,7 @@ pub async fn read(
         (header::CONTENT_TYPE, content_type.to_owned()),
         (
             header::CONTENT_DISPOSITION,
-            format!("inline; filename=\"{:?}\"", image),
+            format!("inline; filename=\"{}\"", image.name()),
         ),
     ];
 
@@ -167,4 +167,28 @@ pub async fn delete(
     fs::remove_file(image.path(&database).await?).await?;
     image.delete(&database).await?;
     Ok(StatusCode::NO_CONTENT)
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
+pub enum Check {
+    #[serde(rename = "on")]
+    On,
+    #[serde(rename = "off")]
+    Off,
+}
+
+pub async fn delete_many(
+    state: State<AppState>,
+    Form(checkboxes): Form<HashMap<i64, Check>>,
+) -> Result<impl IntoResponse, Error> {
+    for id in checkboxes.into_iter().filter_map(|(id, check)| {
+        if let Check::On = check {
+            Some(id)
+        } else {
+            None
+        }
+    }) {
+        delete(state.clone(), Path(id)).await?;
+    }
+    Ok(Redirect::to(""))
 }

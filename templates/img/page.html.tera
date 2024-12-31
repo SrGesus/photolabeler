@@ -22,13 +22,14 @@
           class="input input-bordered w-full flex font-bold items-center gap-2"
         >
           Name
-          <input name="name" id="name" type="text" class="grow font-normal" />
+          <input name="name" id="name" type="text" class="grow font-normal" autocomplete="off" />
         </label>
         <input
           name="files"
           id="files"
           type="file"
           class="file-input file-input-bordered w-full"
+          autocomplete="off"
           multiple
         />
         <button type="submit" class="btn w-full">Submit</button>

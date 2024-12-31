@@ -52,7 +52,7 @@
             <li><a>Homepage</a></li>
             <li>
               
-              <form onsubmit="setTimeout(function () { window.location.reload(); }, 500)" action="/api/refresh" method="POST">
+              <form onsubmit="setTimeout(function () { window.location.reload(); }, 500)" action="/refresh" method="POST">
                 <button type="submit">Refresh Files</button>
               </form></li>
             <li><a>About</a></li>

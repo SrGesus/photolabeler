@@ -1,12 +1,6 @@
-{% import "dir/breadcrumb.html.tera" as breadcrumb %}
-{% import "img/image-card.html.tera" as card %}
-{% extends "layout.html.tera" %}
-
-{% block variables %}
-  {% set title = "Home" %}
-{% endblock variables %}
-
-{% block body %}
+{% import "dir/breadcrumb.html.tera" as breadcrumb %} {% import
+"img/image-card.html.tera" as card %} {% extends "layout.html.tera" %} {% block
+variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
 {{ breadcrumb::breadcrumb(dir_trail=dir_parents) }}
 
 <div
@@ -39,7 +33,7 @@
     </div>
   </a>
   {% endfor %}
-  <button onclick="new_folder_modal.showModal()">
+  <button onclick="new_folder_modal.showModal()" type="button">
     <div
       class="break-inside-avoid card card-side shadow-lg bg-base-200 hover:bg-base-300 p-4"
       title="New Folder"
@@ -78,6 +72,7 @@
             type="text"
             class="grow font-normal"
             placeholder="Daisy"
+            autocomplete="off"
           />
         </label>
         <button type="submit" class="btn">Submit</button>
@@ -99,6 +94,7 @@
             type="text"
             class="grow font-normal"
             placeholder="Daisy"
+            autocomplete="off"
           />
         </label>
         <button type="submit" class="btn">Submit</button>
@@ -107,7 +103,7 @@
     {% endif %}
   </div>
   <form method="dialog" class="modal-backdrop">
-    <button>close</button>
+    <button type="button">close</button>
   </form>
 </dialog>
 
@@ -133,6 +129,7 @@
           id="files"
           type="file"
           class="file-input file-input-bordered w-full"
+          autocomplete="off"
           multiple
         />
         <button type="submit" class="btn w-full">Submit</button>
@@ -140,42 +137,129 @@
     </form>
   </div>
   <form method="dialog" class="modal-backdrop">
-    <button>close</button>
+    <button type="button">close</button>
   </form>
 </dialog>
 {% endif %}
 
-<h1 class="card-title text-3xl text-left m-4 mb-8">Images</h1>
+<h1 class="card-title text-3xl text-left m-4">Images</h1>
 
-<div
-  class="m-4 columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4"
->
-  {% if dir_id > 0 %}
-  <button
-    class="bg-base-200 w-full hover:bg-base-300 break-inside-avoid card shadow-lg"
-    title="New Image"
-    onclick="new_image_modal.showModal()"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke-width="1.5"
-      stroke="currentColor"
-      class="w-full"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+<form method="POST" class="p-4 w-full" enctype="application/x-www-form-urlencoded">
+  <div class="card bg-base-200 p-4 mb-4">
+    <div class="flex items-center space-x-4">
+      <input
+        id="image-selection-checkbox"
+        type="checkbox"
+        class="checkbox checkbox-primary ml-2"
+        autocomplete="off"
+        onchange="checkMaster()"
       />
-    </svg>
-    <div class="card-body">
-      <h2 class="card-title truncate block">New Image</h2>
+      <div class="divider divider-horizontal"></div>
+      <button class="btn btn-error" type="submit" formaction="/i/delete">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="size-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+          />
+        </svg>
+
+        Delete
+      </button>
     </div>
-  </button>
-  {% endif %} {% for image in images %}
-  {{ card::image_card(image=image) }}
-  {% endfor %}
-</div>
+  </div>
+
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 space-y-4"
+  >
+    {% if dir_id > 0 %}
+    <button
+      class="bg-base-200 w-full hover:bg-base-300 break-inside-avoid card shadow-lg"
+      title="New Image"
+      onclick="new_image_modal.showModal()"
+      type="button"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-full"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+        />
+      </svg>
+      <div class="card-body">
+        <h2 class="card-title truncate block">New Image</h2>
+      </div>
+    </button>
+    {% endif %} {% for image in images %}
+    {{ card::image_card(image=image, onclickCheckbox="checkCheckbox(event)") }}
+    {% endfor %}
+  </div>
+</form>
+
+<script>
+  let lastCheckedImageCardCheckbox = null;
+  const masterCheck = document.querySelector("#image-selection-checkbox");
+  const checkboxes = Array.from(
+    document.querySelectorAll(".image-card-checkbox")
+  );
+
+  const checkMaster = () => {
+    if (masterCheck.checked) {
+      checkboxes.forEach((checkbox) => (checkbox.checked = true));
+    } else {
+      checkboxes.forEach((checkbox) => (checkbox.checked = false));
+    }
+  };
+
+  if (checkboxes.every((v) => v.checked)) {
+    masterCheck.indeterminate = false;
+    masterCheck.checked = true;
+  } else if (checkboxes.every((v) => !v.checked)) {
+    masterCheck.indeterminate = false;
+    masterCheck.checked = false;
+  } else {
+    masterCheck.indeterminate = true;
+  }
+
+  const checkCheckbox = (event) => {
+    const lastChecked = lastCheckedImageCardCheckbox;
+    if (event.target.checked) {
+      if (event.shiftKey && lastChecked && lastChecked.checked) {
+        const start = checkboxes.indexOf(event.target);
+        const end = checkboxes.indexOf(lastChecked);
+
+        checkboxes
+          .slice(Math.min(start, end) + 1, Math.max(start, end))
+          .forEach((checkbox) => (checkbox.checked = lastChecked.checked));
+      }
+      lastCheckedImageCardCheckbox = event.target;
+    } else {
+      lastCheckedImageCardCheckbox == null;
+    }
+    if (checkboxes.every((v) => v.checked)) {
+      masterCheck.indeterminate = false;
+      masterCheck.checked = true;
+    } else if (checkboxes.every((v) => !v.checked)) {
+      masterCheck.indeterminate = false;
+      masterCheck.checked = false;
+    } else {
+      masterCheck.indeterminate = true;
+    }
+  };
+</script>
+
 {% endblock body %}
