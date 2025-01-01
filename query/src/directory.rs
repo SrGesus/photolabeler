@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Directory {
-    id: i64,
+    pub id: i64,
     pub parent_id: Option<i64>,
     pub name: String,
     pub path: String,
@@ -17,20 +17,20 @@ impl Directory {
             path,
         }
     }
-    pub fn id(&self) -> i64 {
-        self.id
-    }
-    pub fn path(&self) -> &str {
-        &self.path
-    }
-    pub fn name(&self) -> &str {
-        &self.name
-    }
 }
-
 
 #[async_trait]
-pub trait AppPoolDirectory<Database: sqlx::Database> {
-    // async fn get_directory
-}
+pub trait AppPoolDirectory {
+    async fn get_directory_all(&self) -> Result<Vec<Directory>, sqlx::Error>;
+    async fn get_directory_by_id(&self, id: i64) -> Result<Directory, sqlx::Error>;
+    async fn get_directory_by_parent_id(&self, par_id: i64) -> Result<Vec<Directory>, sqlx::Error>;
+    async fn get_directory_parentless(&self) -> Result<Vec<Directory>, sqlx::Error>;
 
+    async fn directory_ancestors(&self, dir: &Directory) -> Result<Vec<Directory>, sqlx::Error>;
+
+    async fn insert_directory(&self, dir: &mut Directory) -> Result<(), sqlx::Error>;
+
+    async fn update_directory(&self, dir: &Directory) -> Result<(), sqlx::Error>;
+
+    async fn delete_directory(&self, id: i64) -> Result<(), sqlx::Error>;
+}

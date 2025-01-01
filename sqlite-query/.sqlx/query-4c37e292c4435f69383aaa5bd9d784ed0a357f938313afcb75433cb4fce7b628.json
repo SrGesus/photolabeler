@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE Image\n                SET directory_id = ?\n                WHERE id IN (SELECT value from json_each(?))\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "4c37e292c4435f69383aaa5bd9d784ed0a357f938313afcb75433cb4fce7b628"
+}

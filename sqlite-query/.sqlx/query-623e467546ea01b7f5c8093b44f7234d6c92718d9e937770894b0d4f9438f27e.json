@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE Directory\n                SET name = ?, path = ?\n                WHERE id = ?\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "623e467546ea01b7f5c8093b44f7234d6c92718d9e937770894b0d4f9438f27e"
+}

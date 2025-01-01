@@ -24,14 +24,4 @@ impl Database {
 
         Ok(Self(pool))
     }
-
-    // pub async fn insert_image(&self, image: Image) -> Result<Image, Error> {
-    //     Image::get_by_id(self, image.insert(self).await?.last_insert_rowid())
-    //         .await?
-    //         .ok_or(Error::RowNotFound)
-    // }
-
-    // pub async fn delete_image(&self, image: Image) -> Result<(), Error> {
-    //     image.delete(self).await
-    // }
 }

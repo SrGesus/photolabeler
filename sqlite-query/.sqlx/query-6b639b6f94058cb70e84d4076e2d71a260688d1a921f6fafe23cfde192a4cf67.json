@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE Image\n                SET directory_id = ?, name = ?, notes = ?\n                WHERE id = ?\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "6b639b6f94058cb70e84d4076e2d71a260688d1a921f6fafe23cfde192a4cf67"
+}

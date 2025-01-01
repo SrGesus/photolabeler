@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM Image WHERE id IN (SELECT value from json_each(?))",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "fc626412f7f5e85e4ea4099c9ddeddfd8291f16226a2495665225c2e861cb8c6"
+}
