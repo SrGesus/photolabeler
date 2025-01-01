@@ -62,7 +62,7 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
   <div class="modal-box">
     {% if dir_id > 0 %}
     <h3 class="text-lg font-bold">Create a new folder</h3>
-    <form method="POST" action="/dir/insert/{{ dir_id }}">
+    <form method="POST" action="/d/insert/{{ dir_id }}">
       <div class="modal-action">
         <label class="input input-bordered flex font-bold items-center gap-2">
           Name
@@ -83,7 +83,7 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
     <form
       onsubmit="setTimeout(function () { window.location.reload(); }, 10)"
       method="POST"
-      action="/dir/insert"
+      action="/d/insert"
     >
       <div class="modal-action">
         <label class="input input-bordered flex font-bold items-center gap-2">
@@ -144,7 +144,11 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
 
 <h1 class="card-title text-3xl text-left m-4">Images</h1>
 
-<form method="POST" class="p-4 w-full" enctype="application/x-www-form-urlencoded">
+<form
+  method="POST"
+  class="p-4 w-full"
+  enctype="application/x-www-form-urlencoded"
+>
   <div class="card bg-base-200 p-4 mb-4">
     <div class="flex items-center space-x-4">
       <input

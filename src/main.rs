@@ -12,6 +12,7 @@ mod backend;
 mod db;
 mod frontend;
 mod error;
+mod state;
 
 #[derive(Clone)]
 struct AppState(Arc<Database>);

@@ -5,12 +5,12 @@ edition = "2021"
 
 [dependencies]
 axum = { version = "0.7.9", features = ["http2", "macros", "multipart"] }
-serde = "1.0.216"
 tera = "1.20.0"
 tracing = "0.1.41"
 tracing-subscriber = "0.3.19"
 tower-http = { version = "0.5.2", features = ["cors", "fs"] }
 
+serde = { workspace = true }
 sqlx = { workspace = true }
 tokio = { workspace = true }
 dotenvy = { workspace = true }
@@ -20,10 +20,12 @@ thiserror = "2.0.9"
 futures = "0.3.31"
 
 [workspace.dependencies]
+serde = "1.0.216"
 sqlx = { version = "0.8.2", features = ["runtime-tokio", "sqlite", "postgres"] }
 tokio = { version = "1.42.0", features = ["rt-multi-thread", "tokio-macros"] }
 dotenvy = "0.15.7"
+itertools = "0.14.0"
 
 [workspace]
-members = ["migrations/"]
+members = ["migrations", "query", "sqlite-query"]
 resolver = "2"

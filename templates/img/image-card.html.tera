@@ -9,7 +9,7 @@
   </a>
   <div class="card-body flex">
     <label class="label flex items-center justify-between cursor-pointer">
-      <h2 class="card-title truncate block">
+      <h2 class="card-title truncate block select-text">
         {{ image.name }}
       </h2>
       <input
