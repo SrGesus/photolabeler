@@ -1,4 +1,4 @@
-use async_trait::async_trait;
+use futures::future::BoxFuture;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct Label {
@@ -12,7 +12,11 @@ impl Label {
     }
 }
 
-#[async_trait]
-pub trait AppPoolLabel {
-    async fn get_label_by_image_id(&self, image_id: i64) -> Result<Vec<Label>, sqlx::Error>;
+pub trait AppLabelQueryable<'k> {
+    fn get_label_by_image_id<'e>(
+        self: Box<Self>,
+        image_id: i64,
+    ) -> BoxFuture<'e, Result<Vec<Label>, sqlx::Error>>
+    where
+        'k: 'e;
 }

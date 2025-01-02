@@ -1,8 +1,4 @@
-use std::path::PathBuf;
-
-use async_trait::async_trait;
-
-use crate::directory::AppPoolDirectory;
+use futures::future::BoxFuture;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct Image {
@@ -23,22 +19,45 @@ impl Image {
     }
 }
 
-#[async_trait]
-pub trait AppPoolImage: AppPoolDirectory {
-    async fn get_image_all(&self) -> Result<Vec<Image>, sqlx::Error>;
-    async fn get_image_by_id(&self, id: i64) -> Result<Image, sqlx::Error>;
-    async fn get_image_by_directory_id(&self, dir_id: i64) -> Result<Vec<Image>, sqlx::Error>;
-    async fn get_image_by_label_id(&self, lab_id: i64) -> Result<Vec<Image>, sqlx::Error>;
-
-    async fn insert_image(&self, image: &mut Image) -> Result<(), sqlx::Error>;
-
-    async fn update_image(&self, image: &Image) -> Result<(), sqlx::Error>;
-    async fn update_image_directory_many(
-        &self,
+pub trait AppImageQueryable<'k> {
+    fn get_image_all<'e>(self: Box<Self>) -> BoxFuture<'e, Result<Vec<Image>, sqlx::Error>>
+    where
+        'k: 'e;
+    fn get_image_by_id<'e>(self: Box<Self>, id: i64) -> BoxFuture<'e, Result<Image, sqlx::Error>>
+    where
+        'k: 'e;
+    fn get_image_by_directory_id<'e>(
+        self: Box<Self>,
+        dir_id: i64,
+    ) -> BoxFuture<'e, Result<Vec<Image>, sqlx::Error>>
+    where
+        'k: 'e;
+    fn get_image_by_label_id<'e>(
+        self: Box<Self>,
+        lab_id: i64,
+    ) -> BoxFuture<'e, Result<Vec<Image>, sqlx::Error>>
+    where
+        'k: 'e;
+    fn insert_image<'e>(self: Box<Self>, image: &'e mut Image) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    where
+        'k: 'e;
+    fn update_image<'e>(self: Box<Self>, image: &'e Image) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    where
+        'k: 'e;
+    fn update_image_directory_many<'e>(
+        self: Box<Self>,
         ids: Vec<i64>,
         dir_id: i64,
-    ) -> Result<(), sqlx::Error>;
-
-    async fn delete_image_by_id(&self, id: i64) -> Result<(), sqlx::Error>;
-    async fn delete_image_by_id_many(&self, ids: Vec<i64>) -> Result<(), sqlx::Error>;
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    where
+        'k: 'e;
+    fn delete_image_by_id<'e>(self: Box<Self>, id: i64) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    where
+        'k: 'e;
+    fn delete_image_by_id_many<'e>(
+        self: Box<Self>,
+        ids: Vec<i64>,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    where
+        'k: 'e;
 }
