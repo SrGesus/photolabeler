@@ -29,6 +29,27 @@ where
                 .await
         })
     }
+    fn get_image_by_name_in_dir<'e>(
+        self: Box<Self>,
+        dir_id: i64,
+        name: &'e str,
+    ) -> BoxFuture<'e, Result<Image, sqlx::Error>>
+    where
+        'k: 'e,
+    {
+        Box::pin(async move {
+            sqlx::query_as!(
+                Image,
+                r#"SELECT * FROM Image
+                    WHERE (directory_id, name) = (?, ?)
+                "#,
+                dir_id,
+                name
+            )
+            .fetch_one(self.into_executor())
+            .await
+        })
+    }
     fn get_image_by_directory_id<'e>(
         self: Box<Self>,
         dir_id: i64,
@@ -62,7 +83,10 @@ where
             .await
         })
     }
-    fn insert_image<'e>(self: Box<Self>, image: &'e mut Image) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    fn insert_image<'e>(
+        self: Box<Self>,
+        image: &'e mut Image,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e,
     {
@@ -106,7 +130,7 @@ where
     }
     fn update_image_directory_many<'e>(
         self: Box<Self>,
-        ids: Vec<i64>,
+        ids: &'e Vec<i64>,
         dir_id: i64,
     ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
@@ -138,11 +162,14 @@ where
             Ok(())
         })
     }
-    fn delete_image_by_id_many<'e>(self: Box<Self>, ids: Vec<i64>) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    fn delete_image_by_id_many<'e>(
+        self: Box<Self>,
+        ids: &'e Vec<i64>,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e,
     {
-        Box::pin(async {
+        Box::pin(async move {
             let json_ids = sqlx::types::Json(ids);
             sqlx::query!(
                 "DELETE FROM Image WHERE id IN (SELECT value from json_each(?))",

@@ -1,5 +1,14 @@
-use query::{directory::AppPoolDirectory, image::AppPoolImage, label::AppPoolLabel, AppPool};
+use std::sync::Arc;
+
+use query::{
+    directory::AppDirectoryQueryable,
+    image::{AppImageQueryable, Image},
+    label::AppLabelQueryable,
+    AppPool, AppQueryable,
+};
 use sqlite_query::SqliteAppPool;
+
+pub(crate) mod image;
 
 struct AppState {
     pool: Box<dyn AppPool>,
@@ -19,4 +28,5 @@ impl AppState {
 
         Ok(Self { pool })
     }
+
 }

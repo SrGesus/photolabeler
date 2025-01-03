@@ -26,6 +26,13 @@ pub trait AppImageQueryable<'k> {
     fn get_image_by_id<'e>(self: Box<Self>, id: i64) -> BoxFuture<'e, Result<Image, sqlx::Error>>
     where
         'k: 'e;
+    fn get_image_by_name_in_dir<'e>(
+        self: Box<Self>,
+        dir_id: i64,
+        name: &'e str,
+    ) -> BoxFuture<'e, Result<Image, sqlx::Error>>
+    where
+        'k: 'e;
     fn get_image_by_directory_id<'e>(
         self: Box<Self>,
         dir_id: i64,
@@ -38,15 +45,21 @@ pub trait AppImageQueryable<'k> {
     ) -> BoxFuture<'e, Result<Vec<Image>, sqlx::Error>>
     where
         'k: 'e;
-    fn insert_image<'e>(self: Box<Self>, image: &'e mut Image) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    fn insert_image<'e>(
+        self: Box<Self>,
+        image: &'e mut Image,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e;
-    fn update_image<'e>(self: Box<Self>, image: &'e Image) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    fn update_image<'e>(
+        self: Box<Self>,
+        image: &'e Image,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e;
     fn update_image_directory_many<'e>(
         self: Box<Self>,
-        ids: Vec<i64>,
+        ids: &'e Vec<i64>,
         dir_id: i64,
     ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
@@ -56,7 +69,7 @@ pub trait AppImageQueryable<'k> {
         'k: 'e;
     fn delete_image_by_id_many<'e>(
         self: Box<Self>,
-        ids: Vec<i64>,
+        ids: &'e Vec<i64>,
     ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e;

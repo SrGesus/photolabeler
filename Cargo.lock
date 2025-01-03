@@ -1512,6 +1512,8 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "dotenvy",
+ "futures",
+ "futures-core",
  "serde",
  "sqlx",
  "tokio",
@@ -1840,6 +1842,8 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "dotenvy",
+ "futures",
+ "futures-core",
  "itertools",
  "query",
  "serde",
