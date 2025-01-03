@@ -1,13 +1,18 @@
-{% import "dir/breadcrumb.html.tera" as breadcrumb %} {% import
-"img/image-card.html.tera" as card %} {% extends "layout.html.tera" %} {% block
-variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
-{{ breadcrumb::breadcrumb(dir_trail=dir_parents) }}
+{% import "components/breadcrumb.tera" as breadcrumb %}
+{% import "components/file-tree.tera" as tree %}
+{% import "components/image-card.tera" as card %}
+{% extends "layout.tera" %}
+
+{% block variables %} {% set title = dir.name %} {% endblock variables %}
+
+{% block body %}
+{{ breadcrumb::breadcrumb(dir_trail=dir_trail) }}
 
 <div
   class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-4 mb-10"
 >
   {% for directory in directories %}
-  <a class="" href="/{{ directory.id }}">
+  <a href="/dir/{{ directory.id }}">
     <div
       class="break-inside-avoid card card-side shadow-lg bg-base-200 hover:bg-base-300 p-4"
       title="{{ directory.name }}"
@@ -60,9 +65,8 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
 
 <dialog id="new_folder_modal" class="modal">
   <div class="modal-box">
-    {% if dir_id > 0 %}
     <h3 class="text-lg font-bold">Create a new folder</h3>
-    <form method="POST" action="/d/insert/{{ dir_id }}">
+    <form method="POST" action="/dir/{{ dir.id }}/dir">
       <div class="modal-action">
         <label class="input input-bordered flex font-bold items-center gap-2">
           Name
@@ -78,69 +82,11 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
         <button type="submit" class="btn">Submit</button>
       </div>
     </form>
-    {% else %}
-    <h3 class="text-lg font-bold">Register a new folder</h3>
-    <form
-      onsubmit="setTimeout(function () { window.location.reload(); }, 10)"
-      method="POST"
-      action="/d/insert"
-    >
-      <div class="modal-action">
-        <label class="input input-bordered flex font-bold items-center gap-2">
-          Path
-          <input
-            name="path"
-            id="path"
-            type="text"
-            class="grow font-normal"
-            placeholder="Daisy"
-            autocomplete="off"
-          />
-        </label>
-        <button type="submit" class="btn">Submit</button>
-      </div>
-    </form>
-    {% endif %}
   </div>
   <form method="dialog" class="modal-backdrop">
-    <button type="button">close</button>
+    <button>close</button>
   </form>
 </dialog>
-
-{% if dir_id > 0 %}
-<dialog id="new_image_modal" class="modal">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold">Upload images</h3>
-    <form
-      method="POST"
-      action="/i/insert/{{ dir_id }}"
-      enctype="multipart/form-data"
-    >
-      <div class="modal-action flex-col px-4 pb-4 gap-4">
-        <div></div>
-        <label
-          class="input input-bordered w-full flex font-bold items-center gap-2"
-        >
-          Name
-          <input name="name" id="name" type="text" class="grow font-normal" />
-        </label>
-        <input
-          name="files"
-          id="files"
-          type="file"
-          class="file-input file-input-bordered w-full"
-          autocomplete="off"
-          multiple
-        />
-        <button type="submit" class="btn w-full">Submit</button>
-      </div>
-    </form>
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button type="button">close</button>
-  </form>
-</dialog>
-{% endif %}
 
 <h1 class="card-title text-3xl text-left m-4">Images</h1>
 
@@ -159,7 +105,33 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
         onchange="checkMaster()"
       />
       <div class="divider divider-horizontal"></div>
-      <button class="btn btn-error" type="submit" formaction="/i/delete">
+      <button
+        class="btn btn-ghost"
+        type="button"
+        onclick="move_images_modal.showModal()"
+      >
+        Move
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="size-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+          />
+        </svg>
+      </button>
+      <button
+        class="btn btn-error"
+        type="submit"
+        formaction="/dir/{{ dir.id }}/img/delete"
+      >
+        Delete
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -174,8 +146,6 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
             d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
           />
         </svg>
-
-        Delete
       </button>
     </div>
   </div>
@@ -183,7 +153,6 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
   <div
     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 space-y-4"
   >
-    {% if dir_id > 0 %}
     <button
       class="bg-base-200 w-full hover:bg-base-300 break-inside-avoid card shadow-lg"
       title="New Image"
@@ -208,11 +177,62 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
         <h2 class="card-title truncate block">New Image</h2>
       </div>
     </button>
-    {% endif %} {% for image in images %}
+    {% for image in images %}
     {{ card::image_card(image=image, onclickCheckbox="checkCheckbox(event)") }}
     {% endfor %}
   </div>
+
+  <dialog id="move_images_modal" class="modal">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold text-center">Move images to directory</h3>
+      <div class="modal-action flex-col px-4 pb-4 gap-4 space-x-0">
+        {{ tree::file_tree(dir_tree=dir_tree) }}
+        <button
+          type="submit"
+          class="btn"
+          formaction="/dir/{{ dir.id }}/img/delete"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 </form>
+
+<dialog id="new_image_modal" class="modal">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold text-center">Upload images</h3>
+    <form
+      method="POST"
+      action="/dir/{{ dir.id }}/img"
+      enctype="multipart/form-data"
+    >
+      <div class="modal-action flex-col px-4 pb-4 gap-4 space-x-0">
+        <label
+          class="input input-bordered w-full flex font-bold items-center gap-2"
+        >
+          Overwrite Name
+          <input name="name" id="name" type="text" class="grow font-normal" />
+        </label>
+        <input
+          name="files"
+          id="files"
+          type="file"
+          class="file-input file-input-bordered w-full"
+          autocomplete="off"
+          multiple
+        />
+        <button type="submit" class="btn w-full">Submit</button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
 
 <script>
   let lastCheckedImageCardCheckbox = null;

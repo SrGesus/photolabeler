@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use axum::http::StatusCode;
 use futures::{stream::FuturesUnordered, StreamExt};
@@ -21,12 +21,12 @@ pub struct UpdateImage {
 }
 
 impl AppState {
-    pub async fn get_image_file(&self, id: i64) -> Result<File, Error> {
+    pub async fn get_image_file(&self, id: i64) -> Result<(File, PathBuf), Error> {
         let image = self.pool.queryable().get_image_by_id(id).await?;
 
         let path = self.pool.queryable().get_image_path(&image).await?;
 
-        Ok(fs::File::open(path).await?)
+        Ok((fs::File::open(&path).await?, path))
     }
 
     pub async fn get_image_all(&self) -> Result<Vec<Image>, sqlx::Error> {
@@ -45,7 +45,7 @@ impl AppState {
         Ok(self.pool.queryable().get_image_by_label_id(lab_id).await?)
     }
 
-    pub async fn save_image(&self, mut image: Image, image_bytes: Bytes) -> Result<(), Error> {
+    pub async fn create_image(&self, mut image: Image, image_bytes: Bytes) -> Result<(), Error> {
         let original_name = image.name.clone();
 
         let (original_left, original_extension) =
@@ -54,10 +54,12 @@ impl AppState {
                 format!("Image {original_name} has no file extension"),
             ))?;
 
-        if let None = mime_guess::from_ext(original_extension).first_raw() {
+        if mime_guess::from_path(&original_name)
+        .first_raw()
+        .is_none_or(|content| !content.contains("image")) {
             return Err(Error::StatusCode(
                 StatusCode::BAD_REQUEST,
-                format!("MIME Type couldn't be determined for {original_name}"),
+                format!("Could not determine an image type for {original_name}"),
             ));
         }
 
@@ -81,11 +83,11 @@ impl AppState {
             fs::File::create(path).await?.write_all(&image_bytes).await
         } {
             Err(err) => {
-                transaction.rollback();
+                transaction.rollback().await?;
                 Err(err)?
             }
             Ok(_) => {
-                transaction.commit();
+                transaction.commit().await?;
                 Ok(())
             }
         }
@@ -102,6 +104,7 @@ impl AppState {
             let old_path = self.pool.queryable().get_image_path(&image).await?;
             image.directory_id = update.directory_id.unwrap_or(image.directory_id);
             image.name = update.name.unwrap_or(image.name);
+            
             let new_path = self.pool.queryable().get_image_path(&image).await?;
 
             Self::move_file(old_path, new_path).await?;
@@ -109,7 +112,7 @@ impl AppState {
 
         image.notes = update.notes.unwrap_or(image.notes);
 
-        self.pool.queryable().update_image(&image);
+        self.pool.queryable().update_image(&image).await?;
 
         Ok(())
     }
@@ -187,7 +190,7 @@ impl AppState {
         let mut transaction = self.pool.transaction().await?;
 
         match {
-            transaction.queryable().delete_image_by_id_many(ids).await?;
+            transaction.queryable().delete_image_by_id_many(ids).await.ok();
 
             let mut remove_futures = ids
                 .iter()

@@ -1,0 +1,38 @@
+{% macro submenu(dir_tree) %}
+{% for tree in dir_tree %}
+<li>
+  {% if tree.children %}
+  <details close>
+    <summary class="folder p-2" id="{{ tree.dir.id }}">
+      {{ tree.dir.name }}
+    </summary>
+    <ul>
+      {{ tree::submenu(dir_tree=tree.children) }}
+    </ul>
+  </details>
+  {% else %}
+  <a class="folder" id="{{ tree.dir.id }}">{{ tree.dir.name }}</a>
+  {% endif %}
+</li>
+{% endfor %}
+{% endmacro submenu %}
+
+{% macro file_tree(dir_tree) %}
+<input class="hidden" id="file_tree_select" name="destination_dir_id" />
+<ul class="menu bg-base-200 rounded-box">
+  {{ tree::submenu(dir_tree=dir_tree) }}
+</ul>
+<script>
+  document.querySelectorAll('.folder').forEach(a => {
+    a.addEventListener('click', function (event) {
+      // Remove the highlight class from all <a> elements
+      document.querySelectorAll('.folder').forEach(link => link.classList.remove('btn-active'));
+
+      document.querySelector('#file_tree_select').value = event.target.id;
+
+      // Add the highlight class to the clicked <a>
+      event.target.classList.add('btn-active');
+    });
+  });
+</script>
+{% endmacro file_tree %}

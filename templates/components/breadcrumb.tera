@@ -1,5 +1,5 @@
 {% macro breadcrumb(dir_trail) %}
-<div class="breadcrumbs card-title mb-8 ml-4">
+<div class="breadcrumbs card-title mb-8 ml-8">
   <ul>
     <li>
       <a href="/">
@@ -21,7 +21,7 @@
     </li>
     {% for dir in dir_trail %}
     <li>
-      <a href="/{{ dir.id }}">
+      <a href="/dir/{{ dir.id }}">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

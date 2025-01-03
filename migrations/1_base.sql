@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS Directory (
   parent_id INTEGER
     REFERENCES Directory (id)
     ON DELETE CASCADE,
-  name TEXT NOT NULL, 
-  path TEXT NOT NULL UNIQUE
+  name TEXT NOT NULL COLLATE NOCASE,
+  path TEXT NOT NULL UNIQUE COLLATE NOCASE
 );
 
 -- Temporary for development
@@ -14,7 +14,7 @@ VALUES ("images", "./images");
 CREATE TABLE IF NOT EXISTS Image (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   directory_id INTEGER NOT NULL,
-  name TEXT NOT NULL,
+  name TEXT NOT NULL COLLATE NOCASE,
   notes TEXT NOT NULL,
   UNIQUE (directory_id, name),
   FOREIGN KEY (directory_id)

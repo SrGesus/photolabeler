@@ -38,7 +38,7 @@ pub trait AppDirectoryQueryable<'k> {
 
     fn directory_ancestors<'e>(
         self: Box<Self>,
-        dir: &Directory,
+        dir_id: i64,
     ) -> BoxFuture<'e, Result<Vec<Directory>, sqlx::Error>>
     where
         'k: 'e;

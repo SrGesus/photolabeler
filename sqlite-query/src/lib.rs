@@ -1,18 +1,13 @@
 use futures::{future::BoxFuture, FutureExt};
 use sqlx::{Sqlite, Transaction};
-use std::{fmt::Debug, path::Path, path::PathBuf};
+use std::fmt::Debug;
 
-use query::{
-    directory::AppDirectoryQueryable,
-    executor::AppExecutor,
-    image::{AppImageQueryable, Image},
-    label::AppLabelQueryable, AppQueryable, AppTransaction,
-};
+use query::{executor::AppExecutor, AppQueryable, AppTransaction};
 
-pub mod pool;
 pub mod directory;
 pub mod image;
 pub mod label;
+pub mod pool;
 
 pub use pool::*;
 
@@ -20,7 +15,6 @@ type SqliteAppExecutor<E> = AppExecutor<E, Sqlite>;
 
 #[derive(Debug)]
 pub struct SqliteApp<E: Debug>(E);
-
 
 impl<E: Debug + Sized + Send> SqliteApp<E> {
     fn into_executor(self) -> SqliteAppExecutor<E> {

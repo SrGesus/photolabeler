@@ -41,14 +41,14 @@ impl<'k, E> AppQueryable<'k> for E where
 {
 }
 
-pub trait AppPool {
+pub trait AppPool: Send + Sync {
     fn transaction<'e>(
         &'e self,
     ) -> BoxFuture<'e, Result<Box<dyn AppTransaction<'e> + 'e>, sqlx::Error>>;
     fn queryable<'k>(&'k self) -> Box<dyn AppQueryable<'k> + 'k>;
 }
 
-pub trait AppTransaction<'k> {
+pub trait AppTransaction<'k>: Send + Sync {
     fn commit<'e>(self: Box<Self>) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e;

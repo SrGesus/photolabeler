@@ -4,7 +4,7 @@
   title="{{ image.name }}"
   class="bg-base-200 hover:bg-base-300 break-inside-avoid card shadow-lg select-none"
 >
-  <a href="/image/{{ image.id }}">
+  <a href="/img/{{ image.id }}">
     <img src="/i/{{ image.id }}" class="rounded-t-xl" />
   </a>
   <div class="card-body flex">

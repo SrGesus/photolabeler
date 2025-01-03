@@ -17,7 +17,10 @@ where
             sqlx::query_as!(Directory, "SELECT * FROM Directory").fetch_all(self.into_executor()),
         )
     }
-    fn get_directory_by_id<'e>(self: Box<Self>, id: i64) -> BoxFuture<'e, Result<Directory, sqlx::Error>>
+    fn get_directory_by_id<'e>(
+        self: Box<Self>,
+        id: i64,
+    ) -> BoxFuture<'e, Result<Directory, sqlx::Error>>
     where
         'k: 'e,
     {
@@ -44,7 +47,9 @@ where
             .await
         })
     }
-    fn get_directory_parentless<'e>(self: Box<Self>) -> BoxFuture<'e, Result<Vec<Directory>, sqlx::Error>>
+    fn get_directory_parentless<'e>(
+        self: Box<Self>,
+    ) -> BoxFuture<'e, Result<Vec<Directory>, sqlx::Error>>
     where
         'k: 'e,
     {
@@ -57,27 +62,34 @@ where
 
     fn directory_ancestors<'e>(
         self: Box<Self>,
-        dir: &Directory,
+        dir_id: i64,
     ) -> BoxFuture<'e, Result<Vec<Directory>, sqlx::Error>>
     where
         'k: 'e,
     {
         Box::pin(async move {
-            todo!()
-            //  Redo with CTE to avoid many queries
-            // let mut parent_id = dir.parent_id;
-            // let mut parent_directories = Vec::new();
-            // while let Some(id) = parent_id {
-            //     let par_dir = self.into_executor().get_directory_by_id(id).await?;
-            //     parent_id = par_dir.parent_id;
-            //     parent_directories.push(par_dir);
-            // }
-            // parent_directories.reverse();
-            // Ok(parent_directories)
+            let mut ancs = sqlx::query_as!(
+                Directory,
+                r#"WITH RECURSIVE Ancestors AS (
+                    SELECT * FROM Directory WHERE id = ?
+                    UNION ALL
+                    SELECT d.* FROM Directory d
+                        INNER JOIN Ancestors a ON d.id = a.parent_id
+                ) SELECT * FROM Ancestors;
+                "#,
+                dir_id,
+            )
+            .fetch_all(self.into_executor())
+            .await?;
+            ancs.reverse();
+            Ok(ancs)
         })
     }
 
-    fn insert_directory<'e>(self: Box<Self>, dir: &'e mut Directory) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    fn insert_directory<'e>(
+        self: Box<Self>,
+        dir: &'e mut Directory,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e,
     {
@@ -100,7 +112,10 @@ where
         })
     }
 
-    fn update_directory<'e>(self: Box<Self>, dir: &'e Directory) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    fn update_directory<'e>(
+        self: Box<Self>,
+        dir: &'e Directory,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e,
     {

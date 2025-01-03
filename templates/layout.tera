@@ -13,13 +13,6 @@
       rel="stylesheet"
       type="text/css"
     />
-    {#
-    <script
-      src="https://unpkg.com/htmx.org@2.0.1"
-      crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" type="text/css" href="/assets/styles.css" />
-    #}
   </head>
   <body
     id="body"
@@ -49,19 +42,19 @@
             tabindex="0"
             class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
-            <li><a>Homepage</a></li>
+            <li><a href="/">Homepage</a></li>
             <li>
-              
-              <form onsubmit="setTimeout(function () { window.location.reload(); }, 500)" action="/refresh" method="POST">
-                <button type="submit">Refresh Files</button>
-              </form></li>
+              <button onclick="refreshFiles(event)" type="button">
+                Refresh Files
+              </button>
+            </li>
             <li><a>About</a></li>
           </ul>
         </div>
       </div>
 
       <div class="navbar-center">
-        <a href="/" class="btn btn-ghost font-bold text-3xl">Photo Labeler</a>
+        <a href="/" class="btn btn-ghost font-bold text-3xl">Photolabeler</a>
       </div>
 
       <div class="navbar-end">
@@ -85,7 +78,6 @@
               d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"
             />
           </svg>
-
           <!-- moon icon -->
           <svg
             class="swap-on h-10 w-10 fill-current"
@@ -103,19 +95,28 @@
     {# Run this before body #}
     <script>
       // Function to save the checkbox state
-      function persistTheme() {
+      const persistTheme = () => {
         const checkbox = document.getElementById("themeButton");
         localStorage.setItem("darkMode", checkbox.checked);
         document
           .getElementById("body")
           .setAttribute("data-theme", checkbox.checked ? "night" : "winter");
-      }
-      const checkbox = document.getElementById("themeButton");
+      };
       const savedState = localStorage.getItem("darkMode");
-      checkbox.checked = savedState === "true";
+      document.getElementById("themeButton").checked = savedState === "true";
       document
         .getElementById("body")
-        .setAttribute("data-theme", checkbox.checked ? "night" : "winter");
+        .setAttribute("data-theme", savedState === "true" ? "night" : "winter");
+
+      // with htmx you can just return a refresh header
+      const refreshFiles = async (ev) => {
+        try {
+          const response = await fetch("/refresh", { method: "POST" });
+          if (response.ok) {
+            location.reload();
+          }
+        } catch (error) {}
+      };
     </script>
     <div class="container pt-24">{% block body %}{% endblock body %}</div>
   </body>
