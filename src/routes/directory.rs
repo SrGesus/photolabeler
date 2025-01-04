@@ -1,7 +1,7 @@
 use std::{collections::BTreeMap, fmt::format};
 
 use axum::{
-    extract::{Multipart, Path, State},
+    extract::{DefaultBodyLimit, Multipart, Path, State},
     http::StatusCode,
     response::{Html, IntoResponse, Redirect},
     routing::{get, post},
@@ -18,7 +18,7 @@ use crate::{
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/:id", get(page))
-        .route("/:id/img", post(upload_image))
+        .route("/:id/img", post(upload_image).layer(DefaultBodyLimit::max(20 * 1024 * 1024 * 1024)))
         .route("/:id/dir", post(create_directory))
         .route("/:id/img/delete", post(delete_images))
         .route("/:id/img/move", post(move_images))
@@ -76,6 +76,7 @@ pub async fn upload_image(
 ) -> Result<impl IntoResponse, Error> {
     let mut name = String::new();
     while let Some(field) = multipart.next_field().await? {
+      
         if field.name().is_some_and(|n| n == ("name")) {
             name = field.text().await?;
             continue;

@@ -73,7 +73,7 @@ impl AppState {
                 .await
             {
                 tries += 1;
-                image.name = format!("{original_left}_{tries}.{original_extension}");
+                image.name = format!("{original_left}_{tries:04}.{original_extension}");
             }
 
             transaction.queryable().insert_image(&mut image).await?;
@@ -84,6 +84,7 @@ impl AppState {
         } {
             Err(err) => {
                 transaction.rollback().await?;
+                tracing::error!("{err:?}");
                 Err(err)?
             }
             Ok(_) => {

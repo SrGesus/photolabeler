@@ -3,7 +3,7 @@ use axum::{
     extract::{Path, State},
     http::{header, StatusCode},
     response::IntoResponse,
-    routing::{get, post},
+    routing::get,
     Router,
 };
 
@@ -14,6 +14,7 @@ use crate::{error::Error, state::AppState};
 mod refresh;
 mod homepage;
 mod directory;
+mod image;
 
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -21,6 +22,7 @@ pub fn router() -> Router<AppState> {
         .route("/i/:id", get(serve_image))
         .route("/refresh", get(refresh::refresh).post(refresh::refresh))
         .nest("/dir", directory::router())
+        .route("/img/:id", get(image::page))
 }
 
 #[axum::debug_handler]
