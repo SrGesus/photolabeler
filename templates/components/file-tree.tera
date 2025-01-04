@@ -2,7 +2,7 @@
 {% for tree in dir_tree %}
 <li>
   {% if tree.children %}
-  <details close>
+  <details open>
     <summary class="folder p-2" id="{{ tree.dir.id }}">
       {{ tree.dir.name }}
     </summary>
@@ -18,7 +18,7 @@
 {% endmacro submenu %}
 
 {% macro file_tree(dir_tree) %}
-<input class="hidden" id="file_tree_select" name="destination_dir_id" />
+<input class="hidden" id="file_tree_select" name="new_dir_id" autocomplete="off" />
 <ul class="menu bg-base-200 rounded-box">
   {{ tree::submenu(dir_tree=dir_tree) }}
 </ul>

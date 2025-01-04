@@ -1,11 +1,7 @@
-{% import "components/breadcrumb.tera" as breadcrumb %}
-{% import "components/file-tree.tera" as tree %}
-{% import "components/image-card.tera" as card %}
-{% extends "layout.tera" %}
-
-{% block variables %} {% set title = dir.name %} {% endblock variables %}
-
-{% block body %}
+{% import "components/breadcrumb.tera" as breadcrumb %} {% import
+"components/file-tree.tera" as tree %} {% import "components/image-card.tera" as
+card %} {% extends "layout.tera" %} {% block variables %} {% set title =
+dir.name %} {% endblock variables %} {% block body %}
 {{ breadcrumb::breadcrumb(dir_trail=dir_trail) }}
 
 <div
@@ -71,8 +67,8 @@
         <label class="input input-bordered flex font-bold items-center gap-2">
           Name
           <input
-            name="path"
-            id="path"
+            name="name"
+            id="name"
             type="text"
             class="grow font-normal"
             placeholder="Daisy"
@@ -90,11 +86,7 @@
 
 <h1 class="card-title text-3xl text-left m-4">Images</h1>
 
-<form
-  method="POST"
-  class="p-4 w-full"
-  enctype="application/x-www-form-urlencoded"
->
+<form method="POST" enctype="application/x-www-form-urlencoded">
   <div class="card bg-base-200 p-4 mb-4">
     <div class="flex items-center space-x-4">
       <input
@@ -106,9 +98,10 @@
       />
       <div class="divider divider-horizontal"></div>
       <button
-        class="btn btn-ghost"
+        class="image-selection-action btn btn-ghost"
         type="button"
         onclick="move_images_modal.showModal()"
+        disabled
       >
         Move
         <svg
@@ -127,9 +120,10 @@
         </svg>
       </button>
       <button
-        class="btn btn-error"
+        class="image-selection-action btn btn-error"
         type="submit"
         formaction="/dir/{{ dir.id }}/img/delete"
+        disabled
       >
         Delete
         <svg
@@ -185,20 +179,27 @@
   <dialog id="move_images_modal" class="modal">
     <div class="modal-box">
       <h3 class="text-lg font-bold text-center">Move images to directory</h3>
-      <div class="modal-action flex-col px-4 pb-4 gap-4 space-x-0">
-        {{ tree::file_tree(dir_tree=dir_tree) }}
+      <div class="modal-action flex-col gap-4 space-x-0">
+          <div class="max-h-96 overflow-y-auto p-4 ">
+            {{ tree::file_tree(dir_tree=dir_tree) }}
+          </div>
         <button
           type="submit"
           class="btn"
-          formaction="/dir/{{ dir.id }}/img/delete"
+          formaction="/dir/{{ dir.id }}/img/move"
         >
           Submit
         </button>
       </div>
     </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
+    <div class="modal-backdrop">
+      <button
+        onclick="move_images_modal.close()"
+        type="button"
+      >
+        close
+      </button>
+    </div>
   </dialog>
 </form>
 
@@ -240,24 +241,19 @@
   const checkboxes = Array.from(
     document.querySelectorAll(".image-card-checkbox")
   );
+  const actionButtons = Array.from(
+    document.querySelectorAll(".image-selection-action")
+  );
 
   const checkMaster = () => {
     if (masterCheck.checked) {
       checkboxes.forEach((checkbox) => (checkbox.checked = true));
+      actionButtons.forEach((button) => (button.disabled = false));
     } else {
       checkboxes.forEach((checkbox) => (checkbox.checked = false));
+      actionButtons.forEach((button) => (button.disabled = true));
     }
   };
-
-  if (checkboxes.every((v) => v.checked)) {
-    masterCheck.indeterminate = false;
-    masterCheck.checked = true;
-  } else if (checkboxes.every((v) => !v.checked)) {
-    masterCheck.indeterminate = false;
-    masterCheck.checked = false;
-  } else {
-    masterCheck.indeterminate = true;
-  }
 
   const checkCheckbox = (event) => {
     const lastChecked = lastCheckedImageCardCheckbox;
@@ -277,11 +273,14 @@
     if (checkboxes.every((v) => v.checked)) {
       masterCheck.indeterminate = false;
       masterCheck.checked = true;
+      actionButtons.forEach((button) => (button.disabled = false));
     } else if (checkboxes.every((v) => !v.checked)) {
       masterCheck.indeterminate = false;
       masterCheck.checked = false;
+      actionButtons.forEach((button) => (button.disabled = true));
     } else {
       masterCheck.indeterminate = true;
+      actionButtons.forEach((button) => (button.disabled = false));
     }
   };
 </script>

@@ -131,7 +131,7 @@ impl AppState {
         // be the old one because it should not read uncommitted changes
         let image = self.pool.queryable().get_image_by_id(image_id).await?;
         let old_path = self.pool.queryable().get_image_path(&image).await?;
-        Ok(Self::move_file(old_path, new_path).await?)
+        Ok(Self::move_file(old_path, new_path.join(image.name)).await?)
     }
 
     async fn remove_image(&self, image_id: i64) -> Result<(), Error> {
@@ -140,7 +140,7 @@ impl AppState {
         Ok(fs::remove_file(old_path).await?)
     }
 
-    pub async fn move_images(&self, ids: Vec<i64>, new_dir_id: i64) -> Result<(), Error> {
+    pub async fn move_images(&self, ids: &Vec<i64>, new_dir_id: i64) -> Result<(), Error> {
         let mut transaction = self.pool.transaction().await?;
 
         match {

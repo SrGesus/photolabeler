@@ -8,12 +8,6 @@ use crate::error::Error;
 use super::AppState;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
-pub struct CreateDirectory {
-    parent_id: i64,
-    name: String,
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct DirTree {
     dir: Directory,
     children: Vec<DirTree>,
@@ -69,26 +63,26 @@ impl AppState {
     }
 
     // Create a new directory inside another directory
-    pub async fn create_directory(&self, dir: CreateDirectory) -> Result<Directory, sqlx::Error> {
+    pub async fn create_directory(&self, par_id: i64, name: String) -> Result<Directory, sqlx::Error> {
         let mut transaction = self.pool.transaction().await?;
         match {
             let par_dir = transaction
                 .queryable()
-                .get_directory_by_id(dir.parent_id)
+                .get_directory_by_id(par_id)
                 .await?;
 
             let mut new_dir = Directory::new(
-                Some(dir.parent_id),
-                dir.name.to_string(),
+                Some(par_id),
+                name.clone(),
                 path::Path::new(&par_dir.path)
-                    .join(&dir.name)
+                    .join(&name)
                     .to_string_lossy()
                     .into_owned(),
             );
 
             fs::create_dir(&new_dir.path).await?;
 
-            self.pool.queryable().insert_directory(&mut new_dir).await?;
+            transaction.queryable().insert_directory(&mut new_dir).await?;
             Ok(new_dir)
         } {
             Err(err) => {
