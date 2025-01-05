@@ -9,6 +9,7 @@ use crate::error::Error;
 
 pub mod directory;
 pub mod image;
+pub mod label;
 
 #[derive(Clone)]
 pub struct AppState {

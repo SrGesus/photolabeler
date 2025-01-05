@@ -22,7 +22,7 @@ pub fn router() -> Router<AppState> {
         .route("/i/:id", get(serve_image))
         .route("/refresh", get(refresh::refresh).post(refresh::refresh))
         .nest("/dir", directory::router())
-        .route("/img/:id", get(image::page))
+        .nest("/img", image::router())
 }
 
 #[axum::debug_handler]
