@@ -62,17 +62,13 @@ where
         'k: 'e,
     {
         Box::pin(async move {
-            sqlx::query!(
-                "INSERT INTO Label (id, name) VALUES (?, ?)",
-                label.id,
-                label.name
-            )
-            .execute(self.into_executor())
-            .await
-            .map(|r| {
-                label.id = r.last_insert_rowid();
-                r
-            })?;
+            sqlx::query!("INSERT INTO Label (name) VALUES (?)", label.name)
+                .execute(self.into_executor())
+                .await
+                .map(|r| {
+                    label.id = r.last_insert_rowid();
+                    r
+                })?;
             Ok(())
         })
     }
@@ -119,6 +115,27 @@ where
         Box::pin(async move {
             sqlx::query!(
                 "INSERT INTO Labeling (label_id, image_id) VALUES (?, ?)",
+                label_id,
+                image_id
+            )
+            .execute(self.into_executor())
+            .await?;
+            Ok(())
+        })
+    }
+
+    fn delete_labeling<'e>(
+        self: Box<Self>,
+        label_id: i64,
+        image_id: i64,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    where
+        'k: 'e,
+    {
+        Box::pin(async move {
+            sqlx::query!(
+                "DELETE FROM Labeling
+                    WHERE (label_id, image_id) = (?, ?)",
                 label_id,
                 image_id
             )

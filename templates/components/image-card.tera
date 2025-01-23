@@ -2,10 +2,10 @@
 <div
   id="image-card-{{ image.id }}"
   title="{{ image.name }}"
-  class="bg-base-200 hover:bg-base-300 break-inside-avoid card shadow-lg h-fit select-none"
+  class="bg-base-200 hover:bg-base-300 break-inside-avoid card shadow-lg select-none overflow-hidden"
 >
   <a href="/img/{{ image.id }}">
-    <img src="/i/{{ image.id }}" class="rounded-t-xl" />
+    <img src="/i/{{ image.id }}"/>
   </a>
   <div class="card-body flex">
     <label class="label flex items-center justify-between cursor-pointer">

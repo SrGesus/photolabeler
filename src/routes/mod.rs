@@ -1,12 +1,15 @@
+use std::fmt;
+
 use axum::{
     body::Body,
     extract::{Path, State},
-    http::{header, StatusCode},
-    response::IntoResponse,
+    http::{header, HeaderMap, HeaderName, HeaderValue, StatusCode},
+    response::{IntoResponse, IntoResponseParts, ResponseParts},
     routing::get,
     Router,
 };
-
+use chrono::{DateTime, Utc};
+use tokio::fs;
 use tokio_util::io::ReaderStream;
 
 use crate::{error::Error, state::AppState};
@@ -25,9 +28,32 @@ pub fn router() -> Router<AppState> {
         .nest("/img", image::router())
 }
 
+struct Test<T>(T);
+
+impl<K, V> IntoResponseParts for Test<Vec<(K, V)>>
+where
+    K: TryInto<HeaderName>,
+    K::Error: fmt::Display + std::fmt::Debug,
+    V: TryInto<HeaderValue>,
+    V::Error: fmt::Display + std::fmt::Debug,
+{
+    type Error = Error;
+
+    fn into_response_parts(self, mut res: ResponseParts) -> Result<ResponseParts, Self::Error> {
+        for (key, value) in self.0 {
+            let key = key.try_into().unwrap();
+            let value = value.try_into().unwrap();
+            res.headers_mut().insert(key, value);
+        }
+
+        Ok(res)
+    }
+}
+
 #[axum::debug_handler]
 pub async fn serve_image(State(state): State<AppState>, Path(id): Path<i64>) -> impl IntoResponse {
-    let (image, path) = state.get_image_file(id).await?;
+    let path = state.get_image_path(id).await?;
+    let image = fs::File::open(&path).await?;
 
     let body = Body::from_stream(ReaderStream::new(image));
 
@@ -41,13 +67,15 @@ pub async fn serve_image(State(state): State<AppState>, Path(id): Path<i64>) -> 
         }
     };
 
-    let headers = [
-        (header::CONTENT_TYPE, content_type.to_owned()),
-        (
-            header::CONTENT_DISPOSITION,
-            format!("inline; filename=\"{}\"", path.display()),
-        ),
-    ];
+    let mut headers: HeaderMap = HeaderMap::with_capacity(3);
+    
+    headers.insert(header::CONTENT_TYPE, content_type.try_into().unwrap());
+    headers.insert(header::CONTENT_DISPOSITION, format!("inline; filename=\"{}\"", path.display()).try_into().unwrap());
+
+    if let Ok(modified) = fs::metadata(&path).await?.modified() {
+        let modified: DateTime<Utc> = modified.into();
+        headers.insert(header::LAST_MODIFIED, modified.format("%a, %d %b %Y %H:%M:%S GMT").to_string().try_into().unwrap());
+    }
 
     Ok((headers, body))
 }

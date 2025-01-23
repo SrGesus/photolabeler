@@ -1,3 +1,5 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use futures::future::BoxFuture;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
@@ -6,6 +8,7 @@ pub struct Image {
     pub directory_id: i64,
     pub name: String,
     pub notes: String,
+    pub created: i64,
 }
 
 impl Image {
@@ -15,6 +18,10 @@ impl Image {
             directory_id,
             name,
             notes,
+            created: SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs() as i64,
         }
     }
 }

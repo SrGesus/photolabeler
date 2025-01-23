@@ -21,12 +21,10 @@ pub struct UpdateImage {
 }
 
 impl AppState {
-    pub async fn get_image_file(&self, id: i64) -> Result<(File, PathBuf), Error> {
+    pub async fn get_image_path(&self, id: i64) -> Result<PathBuf, Error> {
         let image = self.pool.queryable().get_image_by_id(id).await?;
 
-        let path = self.pool.queryable().get_image_path(&image).await?;
-
-        Ok((fs::File::open(&path).await?, path))
+        Ok(self.pool.queryable().get_image_path(&image).await?)
     }
 
     pub async fn get_image_all(&self) -> Result<Vec<Image>, sqlx::Error> {

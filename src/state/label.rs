@@ -41,4 +41,11 @@ impl AppState {
             .insert_labeling(label_id, image_id)
             .await?)
     }
+    pub async fn delete_labeling(&self, label_id: i64, image_id: i64) -> Result<(), sqlx::Error> {
+        Ok(self
+            .pool
+            .queryable()
+            .delete_labeling(label_id, image_id)
+            .await?)
+    }
 }

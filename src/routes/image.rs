@@ -13,6 +13,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/:id", get(page))
         .route("/:id/label", post(add_label))
+        .route("/:id/label/:label_id/delete", get(delete_label))
 }
 
 #[axum::debug_handler]
@@ -22,7 +23,7 @@ pub async fn page(
 ) -> Result<Html<String>, Error> {
     let image = state.get_image_by_id(id).await?;
     // let labels = state.get_label ....
-    let labels: Vec<Label> = vec![];
+    let labels = state.get_label_by_image_id(id).await?;
     let parents = state.directory_ancestors(image.directory_id).await?;
 
     let tera = Tera::new("templates/**/*").unwrap();
@@ -40,6 +41,15 @@ pub struct AddLabel {
 }
 
 #[axum::debug_handler]
+pub async fn delete_label(
+    State(state): State<AppState>,
+    Path((image_id, label_id)): Path<(i64, i64)>,
+) -> Result<Redirect, Error> {
+    state.delete_labeling(label_id, image_id).await?;
+
+    Ok(Redirect::to(&format!("/img/{image_id}")))
+}
+
 pub async fn add_label(
     State(state): State<AppState>,
     Path(image_id): Path<i64>,
@@ -47,7 +57,7 @@ pub async fn add_label(
 ) -> Result<Redirect, Error> {
     let label = state.get_label_by_name(&add_label.name).await?;
 
-    state.insert_labeling(image_id, label.id).await?;
+    state.insert_labeling(label.id, image_id).await?;
 
-    Ok(Redirect::to(&format!("/{image_id}")))
+    Ok(Redirect::to(&format!("/img/{image_id}")))
 }

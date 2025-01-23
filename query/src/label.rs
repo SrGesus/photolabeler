@@ -57,4 +57,12 @@ pub trait AppLabelQueryable<'k> {
     ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e;
+
+    fn delete_labeling<'e>(
+        self: Box<Self>,
+        label_id: i64,
+        image_id: i64,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    where
+        'k: 'e;
 }

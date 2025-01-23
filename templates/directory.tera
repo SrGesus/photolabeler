@@ -5,21 +5,20 @@ dir.name %} {% endblock variables %} {% block body %}
 {{ breadcrumb::breadcrumb(dir_trail=dir_trail) }}
 
 <div
-  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-4 mb-10"
+  class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-4 m-4 mb-16"
 >
   {% for directory in directories %}
   <a href="/dir/{{ directory.id }}">
     <div
-      class="break-inside-avoid card card-side shadow-lg bg-base-200 hover:bg-base-300 p-4"
+      class="break-inside-avoid card card-side shadow-lg bg-base-200 hover:bg-base-300 p-4 items-center"
       title="{{ directory.name }}"
     >
-      <div class="flex w-1/12 mr-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="2"
-          class="h-fill stroke-current"
+          class="size-6 stroke-current mr-2"
         >
           <path
             stroke-linecap="round"
@@ -27,7 +26,6 @@ dir.name %} {% endblock variables %} {% block body %}
             d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
           />
         </svg>
-      </div>
       <h2 class="card-title">
         {{ directory.name }}
       </h2>
@@ -36,16 +34,15 @@ dir.name %} {% endblock variables %} {% block body %}
   {% endfor %}
   <button onclick="new_folder_modal.showModal()" type="button">
     <div
-      class="break-inside-avoid card card-side shadow-lg bg-base-200 hover:bg-base-300 p-4"
+      class="break-inside-avoid card card-side shadow-lg bg-base-200 hover:bg-base-300 p-4 items-center"
       title="New Folder"
     >
-      <div class="flex w-1/12 mr-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="2"
-          class="h-fill stroke-current"
+          class="size-6 stroke-current mr-2"
         >
           <path
             stroke-linecap="round"
@@ -53,7 +50,6 @@ dir.name %} {% endblock variables %} {% block body %}
             d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
           />
         </svg>
-      </div>
       <h2 class="card-title">New Folder</h2>
     </div>
   </button>
@@ -84,10 +80,10 @@ dir.name %} {% endblock variables %} {% block body %}
   </form>
 </dialog>
 
-<h1 class="card-title text-3xl text-left m-4">Images</h1>
+<h1 class="card-title text-3xl text-left ml-8">Images</h1>
 
-<form method="POST" enctype="application/x-www-form-urlencoded">
-  <div class="card bg-base-200 p-4 mb-4">
+<form method="POST" enctype="application/x-www-form-urlencoded" class="p-4">
+  <div class="card p-4 mb-4">
     <div class="flex items-center space-x-4">
       <input
         id="image-selection-checkbox"
@@ -98,7 +94,7 @@ dir.name %} {% endblock variables %} {% block body %}
       />
       <div class="divider divider-horizontal"></div>
       <button
-        class="image-selection-action btn btn-ghost"
+        class="image-selection-action btn btn-outline btn-ghost"
         type="button"
         onclick="move_images_modal.showModal()"
         disabled
@@ -148,7 +144,7 @@ dir.name %} {% endblock variables %} {% block body %}
     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 space-y-4"
   >
     <button
-      class="bg-base-200 w-full hover:bg-base-300 break-inside-avoid card shadow-lg"
+      class="bg-base-200 w-full hover:bg-base-300 break-inside-avoid card shadow-lg mt-4"
       title="New Image"
       onclick="new_image_modal.showModal()"
       type="button"

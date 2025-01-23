@@ -73,9 +73,9 @@ where
         Box::pin(async move {
             sqlx::query_as!(
                 Image,
-                r#"SELECT id, directory_id, name, notes
-                        FROM Image
-                        INNER JOIN Labeling ON image_id = id
+                r#"SELECT i.*
+                        FROM Image as i
+                        INNER JOIN Labeling ON image_id = i.id
                         WHERE label_id = ?"#,
                 lab_id
             )
@@ -93,11 +93,12 @@ where
         Box::pin(async move {
             sqlx::query!(
                 r#"INSERT INTO Image
-                    (directory_id, name, notes)
-                    VALUES (?, ?, ?)"#,
+                    (directory_id, name, notes, created)
+                    VALUES (?, ?, ?, ?)"#,
                 image.directory_id,
                 image.name,
-                image.notes
+                image.notes,
+                image.created
             )
             .execute(self.into_executor())
             .await

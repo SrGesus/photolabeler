@@ -8,7 +8,7 @@
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="2"
-          class="size-6 stroke-current mr-1"
+          class="size-6 stroke-current mr-2"
         >
           <path
             stroke-linecap="round"
@@ -27,7 +27,7 @@
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="2"
-          class="size-6 stroke-current mr-1"
+          class="size-6 stroke-current mr-2"
         >
           <path
             stroke-linecap="round"

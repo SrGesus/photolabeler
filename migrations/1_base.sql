@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS Image (
   directory_id INTEGER NOT NULL,
   name TEXT NOT NULL COLLATE NOCASE,
   notes TEXT NOT NULL,
+  created INTEGER NOT NULL,
   UNIQUE (directory_id, name),
   FOREIGN KEY (directory_id)
     REFERENCES Directory (id)

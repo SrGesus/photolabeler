@@ -10,11 +10,10 @@
 
 <dialog id="new_label_modal" class="modal">
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Upload images</h3>
+    <h3 class="text-lg font-bold">Add Label</h3>
     <form
       method="POST"
-      action="/i/insert/{{ image.id }}"
-      enctype="multipart/form-data"
+      action="/img/{{ image.id }}/label"
     >
       <div class="modal-action flex-col px-4 pb-4 gap-4">
         <div></div>
@@ -24,14 +23,6 @@
           Name
           <input name="name" id="name" type="text" class="grow font-normal" autocomplete="off" />
         </label>
-        <input
-          name="files"
-          id="files"
-          type="file"
-          class="file-input file-input-bordered w-full"
-          autocomplete="off"
-          multiple
-        />
         <button type="submit" class="btn w-full">Submit</button>
       </div>
     </form>
@@ -41,14 +32,15 @@
   </form>
 </dialog>
 
-<div class="lg:card-side card shadow-lg bg-base-200">
+<div class="lg:card-side card shadow-lg bg-base-200 overflow-hidden mx-4">
   <a href="/i/{{ image.id }}">
     <figure>
-      <img src="/i/{{ image.id }}" class="w-full max-h-screen" />
+      <img src="/i/{{ image.id }}" />
     </figure>
   </a>
   <div class="card-body">
-    <h1 class="card-title text-2xl font-bold">{{ image.name }}</h1>
+    <h1 id="image-date" class="text-lg font-light"></h1>
+    <h1 class="text-2xl font-light">{{ image.name }}</h1>
     <p class="text-base mt-4">{{ image.notes }}</p>
     <div class="mt-6">
       <div class="flex items-center gap-2">
@@ -74,25 +66,8 @@
         </button>
       </div>
       <div class="flex flex-wrap gap-2 space-2 mt-2">
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-        <span class="badge badge-primary p-4">Hehehaha</span>
-
         {% for label in labels %}
-        <span class="badge badge-primary p-4">{{ label.name }}</span>
+        <a class="badge badge-primary p-4" href="/img/{{ image.id }}/label/{{ label.id }}/delete">{{ label.name }}</a>
         {% else %}
         <p class="text-gray-500">No labels available.</p>
         {% endfor %}
@@ -100,5 +75,9 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.getElementById("image-date").textContent = (new Date({{ image.created }} * 1000)).toLocaleString(undefined, { hour12: false })
+</script>
 
 {% endblock body %}
