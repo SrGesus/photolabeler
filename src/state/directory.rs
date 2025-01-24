@@ -1,5 +1,6 @@
 use std::path;
 
+use axum::http::StatusCode;
 use query::directory::Directory;
 use tokio::fs;
 
@@ -62,14 +63,65 @@ impl AppState {
         Ok(self.pool.queryable().directory_ancestors(dir_id).await?)
     }
 
+    pub async fn register_directory(
+        &self,
+        path: String,
+        name: Option<String>,
+    ) -> Result<Directory, Error> {
+        let mut transaction = self.pool.transaction().await?;
+        let path = path::Path::new(&path);
+
+        let mut new_dir = Directory::new(
+            None,
+            name.unwrap_or(
+                path.file_name()
+                    .and_then(|i| i.to_str())
+                    .ok_or(Error::StatusCode(
+                        StatusCode::BAD_REQUEST,
+                        "Invalid Path".to_string(),
+                    ))?
+                    .to_owned(),
+            ),
+            path.to_str()
+                .ok_or(Error::StatusCode(
+                    StatusCode::BAD_REQUEST,
+                    "Invalid Path".to_string(),
+                ))?
+                .to_owned(),
+        );
+        match {
+            transaction
+                .queryable()
+                .insert_directory(&mut new_dir)
+                .await?;
+
+            if fs::metadata(path).await.is_ok_and(|f| f.is_dir()) {
+            } else {
+                fs::create_dir_all(path).await?;
+            }
+            Ok(new_dir)
+        } {
+            Err(err) => {
+                transaction.rollback().await?;
+                Err(err)
+            }
+            Ok(d) => {
+                transaction.commit().await?;
+                self.add_missing(d.clone()).await?;
+                Ok(d)
+            }
+        }
+    }
+
+    pub async fn unregister_directory(&self, id: i64) -> Result<(), Error>{
+        Ok(self.pool.queryable().delete_directory(id).await?)
+    }
+
     // Create a new directory inside another directory
-    pub async fn create_directory(&self, par_id: i64, name: String) -> Result<Directory, sqlx::Error> {
+    pub async fn create_directory(&self, par_id: i64, name: String) -> Result<Directory, Error> {
         let mut transaction = self.pool.transaction().await?;
         match {
-            let par_dir = transaction
-                .queryable()
-                .get_directory_by_id(par_id)
-                .await?;
+            let par_dir = transaction.queryable().get_directory_by_id(par_id).await?;
 
             let mut new_dir = Directory::new(
                 Some(par_id),
@@ -82,7 +134,10 @@ impl AppState {
 
             fs::create_dir(&new_dir.path).await?;
 
-            transaction.queryable().insert_directory(&mut new_dir).await?;
+            transaction
+                .queryable()
+                .insert_directory(&mut new_dir)
+                .await?;
             Ok(new_dir)
         } {
             Err(err) => {

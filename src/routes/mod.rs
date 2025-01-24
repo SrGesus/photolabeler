@@ -28,28 +28,6 @@ pub fn router() -> Router<AppState> {
         .nest("/img", image::router())
 }
 
-struct Test<T>(T);
-
-impl<K, V> IntoResponseParts for Test<Vec<(K, V)>>
-where
-    K: TryInto<HeaderName>,
-    K::Error: fmt::Display + std::fmt::Debug,
-    V: TryInto<HeaderValue>,
-    V::Error: fmt::Display + std::fmt::Debug,
-{
-    type Error = Error;
-
-    fn into_response_parts(self, mut res: ResponseParts) -> Result<ResponseParts, Self::Error> {
-        for (key, value) in self.0 {
-            let key = key.try_into().unwrap();
-            let value = value.try_into().unwrap();
-            res.headers_mut().insert(key, value);
-        }
-
-        Ok(res)
-    }
-}
-
 #[axum::debug_handler]
 pub async fn serve_image(State(state): State<AppState>, Path(id): Path<i64>) -> impl IntoResponse {
     let path = state.get_image_path(id).await?;

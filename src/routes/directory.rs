@@ -18,11 +18,16 @@ use crate::{
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/:id", get(page))
-        .route("/:id/img", post(upload_image).layer(DefaultBodyLimit::max(20 * 1024 * 1024 * 1024)))
+        .route(
+            "/:id/img",
+            post(upload_image).layer(DefaultBodyLimit::max(20 * 1024 * 1024 * 1024)),
+        )
         .route("/:id/dir", post(create_directory))
         .route("/:id/img/delete", post(delete_images))
         .route("/:id/img/move", post(move_images))
         .route("/tree", get(tree))
+        .route("/", post(new_folder))
+        .route("/:id/delete", post(unregister_folder))
 }
 
 #[axum::debug_handler]
@@ -52,22 +57,20 @@ pub async fn page(
     Ok(Html(tera.render("directory.tera", &context).unwrap()))
 }
 
-
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct CreateDirectory {
-    name: String
+    name: String,
 }
 
 #[axum::debug_handler]
 pub async fn create_directory(
-  State(state): State<AppState>,
-  Path(dir_id): Path<i64>,
-  Form(dir): Form<CreateDirectory>
+    State(state): State<AppState>,
+    Path(dir_id): Path<i64>,
+    Form(dir): Form<CreateDirectory>,
 ) -> Result<impl IntoResponse, Error> {
+    let new_dir = state.create_directory(dir_id, dir.name).await?;
 
-  let new_dir = state.create_directory(dir_id, dir.name).await?;
-
-  Ok(Redirect::to(&format!("/dir/{}", new_dir.id)))
+    Ok(Redirect::to(&format!("/dir/{}", new_dir.id)))
 }
 pub async fn upload_image(
     State(state): State<AppState>,
@@ -76,7 +79,6 @@ pub async fn upload_image(
 ) -> Result<impl IntoResponse, Error> {
     let mut name = String::new();
     while let Some(field) = multipart.next_field().await? {
-      
         if field.name().is_some_and(|n| n == ("name")) {
             name = field.text().await?;
             continue;
@@ -149,4 +151,36 @@ pub async fn move_images(
     state.move_images(&ids, new_dir_id).await?;
 
     Ok(Redirect::to(&format!("/dir/{new_dir_id}")))
+}
+
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct NewFolder {
+    path: String,
+    name: String,
+}
+
+pub async fn new_folder(
+    State(state): State<AppState>,
+    Form(f): Form<NewFolder>,
+) -> Result<impl IntoResponse, Error> {
+    state
+        .register_directory(
+            f.path,
+            if f.name.is_empty() {
+                None
+            } else {
+                Some(f.name)
+            },
+        )
+        .await?;
+
+    Ok(Redirect::to("/"))
+}
+
+pub async fn unregister_folder(
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+) -> Result<impl IntoResponse, Error> {
+    state.unregister_directory(id).await?;
+    Ok(Redirect::to("/"))
 }
