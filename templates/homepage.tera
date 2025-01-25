@@ -76,44 +76,6 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
   </button>
 </div>
 
-<dialog id="new_folder_moda" class="modal">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold text-center">Register a new folder</h3>
-    <form
-      onsubmit="setTimeout(function () { window.location.reload(); }, 10)"
-      method="POST"
-      action="/dir"
-    >
-      <div class="modal-action">
-        <label class="input input-bordered flex font-bold items-center gap-2">
-          Name
-          <input
-            name="name"
-            id="name"
-            type="text"
-            class="grow font-normal"
-            autocomplete="off"
-          />
-        </label>
-        <label class="input input-bordered flex font-bold items-center gap-2">
-          Path
-          <input
-            name="path"
-            id="path"
-            type="text"
-            class="grow font-normal"
-            autocomplete="off"
-          />
-        </label>
-        <button type="submit" class="btn">Submit</button>
-      </div>
-    </form>
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
-
 <dialog id="new_folder_modal" class="modal">
   <div class="modal-box">
     <h3 class="text-lg font-bold text-center">Register a new folder</h3>
