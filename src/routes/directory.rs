@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, fmt::format};
+use std::collections::BTreeMap;
 
 use axum::{
     extract::{DefaultBodyLimit, Multipart, Path, State},
@@ -26,16 +26,12 @@ pub fn router() -> Router<AppState> {
         .route("/:id/img/delete", post(delete_images))
         .route("/:id/img/move", post(move_images))
         .route("/tree", get(tree))
-        .route("/", post(new_folder))
-        .route("/:id/delete", post(unregister_folder))
 }
 
-#[axum::debug_handler]
 pub async fn tree(State(state): State<AppState>) -> Result<Json<Vec<DirTree>>, Error> {
     Ok(Json(state.get_dir_tree().await?))
 }
 
-#[axum::debug_handler]
 pub async fn page(
     State(state): State<AppState>,
     Path(id): Path<i64>,
@@ -62,7 +58,6 @@ pub struct CreateDirectory {
     name: String,
 }
 
-#[axum::debug_handler]
 pub async fn create_directory(
     State(state): State<AppState>,
     Path(dir_id): Path<i64>,
@@ -72,6 +67,7 @@ pub async fn create_directory(
 
     Ok(Redirect::to(&format!("/dir/{}", new_dir.id)))
 }
+
 pub async fn upload_image(
     State(state): State<AppState>,
     Path(dir_id): Path<i64>,
@@ -151,36 +147,4 @@ pub async fn move_images(
     state.move_images(&ids, new_dir_id).await?;
 
     Ok(Redirect::to(&format!("/dir/{new_dir_id}")))
-}
-
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct NewFolder {
-    path: String,
-    name: String,
-}
-
-pub async fn new_folder(
-    State(state): State<AppState>,
-    Form(f): Form<NewFolder>,
-) -> Result<impl IntoResponse, Error> {
-    state
-        .register_directory(
-            f.path,
-            if f.name.is_empty() {
-                None
-            } else {
-                Some(f.name)
-            },
-        )
-        .await?;
-
-    Ok(Redirect::to("/"))
-}
-
-pub async fn unregister_folder(
-    State(state): State<AppState>,
-    Path(id): Path<i64>,
-) -> Result<impl IntoResponse, Error> {
-    state.unregister_directory(id).await?;
-    Ok(Redirect::to("/"))
 }

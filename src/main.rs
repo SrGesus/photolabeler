@@ -1,16 +1,8 @@
-use std::sync::Arc;
-
-use axum::{
-    http::StatusCode,
-    routing::{get, post},
-    Json, Router,
-};
-use serde::{Deserialize, Serialize};
 use state::AppState;
 
 // mod backend;
-mod routes;
 mod error;
+mod routes;
 mod state;
 
 // #[derive(Clone)]
@@ -44,15 +36,7 @@ async fn main() {
     // Get address that server should be bound to.
     let addr = env_var!(SERVER_ADDRESS);
 
-    let app = 
-        // Router::new()
-        // .route("/", get(frontend::homepage))
-        // .route("/:directory_id", get(frontend::images))
-        // .route("/image/:image_id", get(frontend::image))
-        // .nest("/", api)
-        // .nest("/", routes::router())
-        routes::router()
-        .with_state(state);
+    let app = routes::router().with_state(state);
 
     // Start up our server
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();

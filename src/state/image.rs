@@ -3,10 +3,7 @@ use std::path::{Path, PathBuf};
 use axum::http::StatusCode;
 use futures::{stream::FuturesUnordered, StreamExt};
 use query::image::Image;
-use tokio::{
-    fs::{self, File},
-    io::AsyncWriteExt,
-};
+use tokio::{fs, io::AsyncWriteExt};
 use tokio_util::bytes::Bytes;
 
 use crate::error::Error;
@@ -36,7 +33,11 @@ impl AppState {
     }
 
     pub async fn get_image_by_directory_id(&self, dir_id: i64) -> Result<Vec<Image>, Error> {
-        Ok(self.pool.queryable().get_image_by_directory_id(dir_id).await?)
+        Ok(self
+            .pool
+            .queryable()
+            .get_image_by_directory_id(dir_id)
+            .await?)
     }
 
     pub async fn get_image_by_label_id(&self, lab_id: i64) -> Result<Vec<Image>, Error> {
@@ -53,8 +54,9 @@ impl AppState {
             ))?;
 
         if mime_guess::from_path(&original_name)
-        .first_raw()
-        .is_none_or(|content| !content.contains("image")) {
+            .first_raw()
+            .is_none_or(|content| !content.contains("image"))
+        {
             return Err(Error::StatusCode(
                 StatusCode::BAD_REQUEST,
                 format!("Could not determine an image type for {original_name}"),
@@ -103,7 +105,7 @@ impl AppState {
             let old_path = self.pool.queryable().get_image_path(&image).await?;
             image.directory_id = update.directory_id.unwrap_or(image.directory_id);
             image.name = update.name.unwrap_or(image.name);
-            
+
             let new_path = self.pool.queryable().get_image_path(&image).await?;
 
             Self::move_file(old_path, new_path).await?;
@@ -189,7 +191,11 @@ impl AppState {
         let mut transaction = self.pool.transaction().await?;
 
         match {
-            transaction.queryable().delete_image_by_id_many(ids).await.ok();
+            transaction
+                .queryable()
+                .delete_image_by_id_many(ids)
+                .await
+                .ok();
 
             let mut remove_futures = ids
                 .iter()

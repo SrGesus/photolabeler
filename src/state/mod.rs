@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::{path, sync::Arc};
 
 use futures::{stream::FuturesUnordered, StreamExt};

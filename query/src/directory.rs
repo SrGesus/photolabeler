@@ -23,7 +23,10 @@ pub trait AppDirectoryQueryable<'k> {
     fn get_directory_all<'e>(self: Box<Self>) -> BoxFuture<'e, Result<Vec<Directory>, sqlx::Error>>
     where
         'k: 'e;
-    fn get_directory_by_id<'e>(self: Box<Self>, id: i64) -> BoxFuture<'e, Result<Directory, sqlx::Error>>
+    fn get_directory_by_id<'e>(
+        self: Box<Self>,
+        id: i64,
+    ) -> BoxFuture<'e, Result<Directory, sqlx::Error>>
     where
         'k: 'e;
     fn get_directory_by_parent_id<'e>(
@@ -32,7 +35,9 @@ pub trait AppDirectoryQueryable<'k> {
     ) -> BoxFuture<'e, Result<Vec<Directory>, sqlx::Error>>
     where
         'k: 'e;
-    fn get_directory_parentless<'e>(self: Box<Self>) -> BoxFuture<'e, Result<Vec<Directory>, sqlx::Error>>
+    fn get_directory_parentless<'e>(
+        self: Box<Self>,
+    ) -> BoxFuture<'e, Result<Vec<Directory>, sqlx::Error>>
     where
         'k: 'e;
 
@@ -43,11 +48,17 @@ pub trait AppDirectoryQueryable<'k> {
     where
         'k: 'e;
 
-    fn insert_directory<'e>(self: Box<Self>, dir: &'e mut Directory) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    fn insert_directory<'e>(
+        self: Box<Self>,
+        dir: &'e mut Directory,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e;
 
-    fn update_directory<'e>(self: Box<Self>, dir: &'e Directory) -> BoxFuture<'e, Result<(), sqlx::Error>>
+    fn update_directory<'e>(
+        self: Box<Self>,
+        dir: &'e Directory,
+    ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e;
 

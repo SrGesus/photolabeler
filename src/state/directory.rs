@@ -113,7 +113,7 @@ impl AppState {
         }
     }
 
-    pub async fn unregister_directory(&self, id: i64) -> Result<(), Error>{
+    pub async fn unregister_directory(&self, id: i64) -> Result<(), Error> {
         Ok(self.pool.queryable().delete_directory(id).await?)
     }
 

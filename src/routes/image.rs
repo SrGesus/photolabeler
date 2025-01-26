@@ -4,7 +4,6 @@ use axum::{
     routing::{get, post},
     Form, Router,
 };
-use query::label::Label;
 use tera::{Context, Tera};
 
 use crate::{error::Error, state::AppState};

@@ -18,20 +18,20 @@ impl SqliteAppPool {
 }
 
 impl Clone for SqliteAppPool {
-  fn clone(&self) -> Self {
-      Self(self.0.clone())
-  }
+    fn clone(&self) -> Self {
+        Self(self.0.clone())
+    }
 }
 
 impl AppPool for SqliteAppPool {
-  fn transaction<'e>(
-      &'e self,
-  ) -> BoxFuture<'e, Result<Box<dyn AppTransaction<'e> + 'e>, sqlx::Error>> {
-      Box::pin(async move {
-          Ok(Box::new(SqliteApp(self.0.begin().await?)) as Box<dyn AppTransaction<'e>>)
-      })
-  }
-  fn queryable<'k>(&'k self) -> Box<dyn AppQueryable<'k> + 'k> {
-      Box::new(SqliteApp(&self.0)) as Box<dyn AppQueryable<'k>>
-  }
+    fn transaction<'e>(
+        &'e self,
+    ) -> BoxFuture<'e, Result<Box<dyn AppTransaction<'e> + 'e>, sqlx::Error>> {
+        Box::pin(async move {
+            Ok(Box::new(SqliteApp(self.0.begin().await?)) as Box<dyn AppTransaction<'e>>)
+        })
+    }
+    fn queryable<'k>(&'k self) -> Box<dyn AppQueryable<'k> + 'k> {
+        Box::new(SqliteApp(&self.0)) as Box<dyn AppQueryable<'k>>
+    }
 }

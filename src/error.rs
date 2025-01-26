@@ -12,7 +12,7 @@ pub enum Error {
     #[error("Multipart Error: {0}")]
     Multipart(MultipartError),
     #[error("IO error: {0}")]
-    Io(io::Error)
+    Io(io::Error),
 }
 
 impl IntoResponse for Error {
@@ -23,7 +23,7 @@ impl IntoResponse for Error {
                 Error::Database(_) => StatusCode::INTERNAL_SERVER_ERROR,
                 Error::Multipart(_) => StatusCode::BAD_REQUEST,
                 Error::StatusCode(status, _) => status,
-                Error::Io(_) => StatusCode::INTERNAL_SERVER_ERROR
+                Error::Io(_) => StatusCode::INTERNAL_SERVER_ERROR,
             },
             self.to_string(),
         )
@@ -31,7 +31,7 @@ impl IntoResponse for Error {
     }
 }
 
-impl From<io::Error>  for Error{
+impl From<io::Error> for Error {
     fn from(value: io::Error) -> Self {
         Error::Io(value)
     }

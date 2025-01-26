@@ -55,5 +55,5 @@ pub trait AppTransaction<'k>: Send + Sync {
     fn rollback<'e>(self: Box<Self>) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e;
-    fn queryable<'e>(&'e mut self) ->  Box<dyn AppQueryable<'e> + 'e>;
+    fn queryable<'e>(&'e mut self) -> Box<dyn AppQueryable<'e> + 'e>;
 }

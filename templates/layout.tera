@@ -54,7 +54,7 @@
       </div>
 
       <div class="navbar-center">
-        <a href="/" class="btn btn-ghost font-bold text-3xl">Photolabeler</a>
+        <a href="/home" class="btn btn-ghost font-bold text-3xl">Photolabeler</a>
       </div>
 
       <div class="navbar-end">
