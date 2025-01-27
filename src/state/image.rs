@@ -24,8 +24,12 @@ impl AppState {
         Ok(self.pool.queryable().get_image_path(&image).await?)
     }
 
-    pub async fn get_image_all(&self) -> Result<Vec<Image>, sqlx::Error> {
-        Ok(self.pool.queryable().get_image_all().await?)
+    pub async fn get_image_all(&self, labels: Option<Vec<String>>) -> Result<Vec<Image>, sqlx::Error> {
+        Ok(match labels {
+            Some(labels) => self.pool.queryable().get_image_by_label_names(labels),
+            None => 
+            self.pool.queryable().get_image_all()
+        }.await?)
     }
 
     pub async fn get_image_by_id(&self, id: i64) -> Result<Image, Error> {

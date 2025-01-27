@@ -19,6 +19,28 @@ where
                 .await
         })
     }
+    fn get_image_by_label_names<'e>(
+        self: Box<Self>,
+        labels: Vec<String>,
+    ) -> BoxFuture<'e, Result<Vec<Image>, sqlx::Error>>
+    where
+        'k: 'e,
+    {
+        Box::pin(async move {
+            let labels_json = sqlx::types::Json(labels);
+            sqlx::query_as!(
+                Image,
+                r#"SELECT i.*
+                        FROM Image as i
+                        INNER JOIN Labeling ON image_id = i.id
+                        INNER JOIN Label as l ON l.id = label_id
+                        WHERE l.name IN (SELECT value from json_each(?))"#,
+                labels_json
+            )
+            .fetch_all(self.into_executor())
+            .await
+        })
+    }
     fn get_image_by_id<'e>(self: Box<Self>, id: i64) -> BoxFuture<'e, Result<Image, sqlx::Error>>
     where
         'k: 'e,

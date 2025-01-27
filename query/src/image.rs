@@ -30,6 +30,9 @@ pub trait AppImageQueryable<'k> {
     fn get_image_all<'e>(self: Box<Self>) -> BoxFuture<'e, Result<Vec<Image>, sqlx::Error>>
     where
         'k: 'e;
+    fn get_image_by_label_names<'e>(self: Box<Self>, labels: Vec<String>) -> BoxFuture<'e, Result<Vec<Image>, sqlx::Error>>
+    where
+        'k: 'e;
     fn get_image_by_id<'e>(self: Box<Self>, id: i64) -> BoxFuture<'e, Result<Image, sqlx::Error>>
     where
         'k: 'e;

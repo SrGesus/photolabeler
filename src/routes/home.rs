@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     response::{Html, IntoResponse, Redirect},
     routing::{get, post},
     Form, Router,
@@ -15,11 +15,17 @@ pub fn router() -> Router<AppState> {
         .route("/images", get(all_images))
 }
 
+#[derive(Debug, serde::Deserialize)]
+pub struct ImageFilter {
+    labels: Option<String>
+}
+
 #[axum::debug_handler]
-pub async fn all_images(State(state): State<AppState>) -> Result<Html<String>, Error> {
+pub async fn all_images(State(state): State<AppState>, Query(filter): Query<ImageFilter>) -> Result<Html<String>, Error> {
     let directories = state.get_directory_parentless().await?;
     let dir_tree = state.get_dir_tree().await?;
-    let images = state.get_image_all().await?;
+    let labels = filter.labels.map(|l| l.split(',').map(|s| s.to_string()).collect());
+    let images = state.get_image_all(labels).await?;
 
     let tera = Tera::new("templates/**/*").unwrap();
     let mut context = Context::new();
