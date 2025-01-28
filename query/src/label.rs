@@ -1,9 +1,18 @@
 use futures::future::BoxFuture;
 
+use crate::image::Image;
+
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct Label {
     pub id: i64,
     pub name: String,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
+pub struct Labeling {
+    #[serde(flatten)]
+    pub name: String,
+    pub value: Option<String>,
 }
 
 impl Label {
@@ -14,12 +23,6 @@ impl Label {
 
 pub trait AppLabelQueryable<'k> {
     fn get_label_all<'e>(self: Box<Self>) -> BoxFuture<'e, Result<Vec<Label>, sqlx::Error>>
-    where
-        'k: 'e;
-    fn get_label_by_image_id<'e>(
-        self: Box<Self>,
-        image_id: i64,
-    ) -> BoxFuture<'e, Result<Vec<Label>, sqlx::Error>>
     where
         'k: 'e;
     fn get_label_by_name<'e>(
@@ -50,10 +53,25 @@ pub trait AppLabelQueryable<'k> {
     where
         'k: 'e;
 
+    fn get_label_unique_values<'e>(
+        self: Box<Self>,
+        label_id: i64,
+    ) -> BoxFuture<'e, Result<Vec<Labeling>, sqlx::Error>>
+    where
+        'k: 'e;
+
+    fn get_labeling_by_image_id<'e>(
+        self: Box<Self>,
+        image_id: i64,
+    ) -> BoxFuture<'e, Result<Vec<Labeling>, sqlx::Error>>
+    where
+        'k: 'e;
+
     fn insert_labeling<'e>(
         self: Box<Self>,
         label_id: i64,
         image_id: i64,
+        value: Option<String>,
     ) -> BoxFuture<'e, Result<(), sqlx::Error>>
     where
         'k: 'e;

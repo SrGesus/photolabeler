@@ -35,5 +35,6 @@ CREATE TABLE IF NOT EXISTS Labeling (
   image_id INTEGER NOT NULL
     REFERENCES Image (id)
     ON DELETE CASCADE,
+  value TEXT,
   PRIMARY KEY (label_id, image_id)
 );
