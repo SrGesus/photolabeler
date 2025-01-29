@@ -37,6 +37,7 @@ pub async fn page(
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct AddLabel {
     name: String,
+    value: Option<String>,
 }
 
 #[axum::debug_handler]
@@ -56,7 +57,13 @@ pub async fn add_label(
 ) -> Result<Redirect, Error> {
     let label = state.get_label_by_name(&add_label.name).await?;
 
-    state.insert_labeling(label.id, image_id).await?;
+    state
+        .insert_labeling(
+            label.id,
+            image_id,
+            add_label.value.filter(|v| !v.is_empty()),
+        )
+        .await?;
 
     Ok(Redirect::to(&format!("/img/{image_id}")))
 }

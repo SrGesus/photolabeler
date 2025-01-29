@@ -17,14 +17,19 @@ pub fn router() -> Router<AppState> {
 
 #[derive(Debug, serde::Deserialize)]
 pub struct ImageFilter {
-    labels: Option<String>
+    labels: Option<String>,
 }
 
 #[axum::debug_handler]
-pub async fn all_images(State(state): State<AppState>, Query(filter): Query<ImageFilter>) -> Result<Html<String>, Error> {
+pub async fn all_images(
+    State(state): State<AppState>,
+    Query(filter): Query<ImageFilter>,
+) -> Result<Html<String>, Error> {
     let directories = state.get_directory_parentless().await?;
     let dir_tree = state.get_dir_tree().await?;
-    let labels = filter.labels.map(|l| l.split(',').map(|s| s.to_string()).collect());
+    let labels = filter
+        .labels
+        .map(|l| l.split(',').map(|s| s.to_string()).collect());
     let images = state.get_image_all(labels).await?;
 
     let tera = Tera::new("templates/**/*").unwrap();
@@ -57,14 +62,7 @@ pub async fn register_folder(
     Form(f): Form<NewFolder>,
 ) -> Result<impl IntoResponse, Error> {
     state
-        .register_directory(
-            f.path,
-            if f.name.is_empty() {
-                None
-            } else {
-                Some(f.name)
-            },
-        )
+        .register_directory(f.path, Some(f.name).filter(|v| !v.is_empty()))
         .await?;
 
     Ok(Redirect::to("/"))

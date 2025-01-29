@@ -93,7 +93,7 @@ where
             Box::pin(async move {
                 sqlx::query_as!(
                     Labeling,
-                    r#"SELECT DISTINCT name, value
+                    r#"SELECT DISTINCT l.id, name, value
                         FROM Label as l
                         INNER JOIN Labeling ON label_id = ?
                     "#,
@@ -114,7 +114,7 @@ where
         Box::pin(async move {
             sqlx::query_as!(
                 Labeling,
-                r#"SELECT name, value
+                r#"SELECT l.id, name, value
                     FROM Label as l
                     INNER JOIN Labeling ON label_id = l.id
                     WHERE image_id = ?

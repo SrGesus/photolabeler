@@ -1,16 +1,14 @@
 use futures::future::BoxFuture;
 
-use crate::image::Image;
-
-#[derive(serde::Serialize, serde::Deserialize, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Label {
     pub id: i64,
     pub name: String,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Labeling {
-    #[serde(flatten)]
+    pub id: i64,
     pub name: String,
     pub value: Option<String>,
 }

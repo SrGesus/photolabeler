@@ -1,15 +1,15 @@
-use query::label::Label;
+use query::label::{Label, Labeling};
 
 use crate::error::Error;
 
 use super::AppState;
 
 impl AppState {
-    pub async fn get_label_by_image_id(&self, image_id: i64) -> Result<Vec<Label>, Error> {
+    pub async fn get_label_by_image_id(&self, image_id: i64) -> Result<Vec<Labeling>, Error> {
         Ok(self
             .pool
             .queryable()
-            .get_label_by_image_id(image_id)
+            .get_labeling_by_image_id(image_id)
             .await?)
     }
     pub async fn get_label_by_name(&self, name: &str) -> Result<Label, Error> {
@@ -34,11 +34,11 @@ impl AppState {
     pub async fn delete_label_by_id(&self, id: i64) -> Result<(), Error> {
         Ok(self.pool.queryable().delete_label_by_id(id).await?)
     }
-    pub async fn insert_labeling(&self, label_id: i64, image_id: i64) -> Result<(), sqlx::Error> {
+    pub async fn insert_labeling(&self, label_id: i64, image_id: i64, value: Option<String>) -> Result<(), sqlx::Error> {
         Ok(self
             .pool
             .queryable()
-            .insert_labeling(label_id, image_id)
+            .insert_labeling(label_id, image_id, value)
             .await?)
     }
     pub async fn delete_labeling(&self, label_id: i64, image_id: i64) -> Result<(), sqlx::Error> {

@@ -1,27 +1,37 @@
-{% import "components/breadcrumb.tera" as breadcrumb %}
-{% extends "layout.tera" %}
-
-{% block variables %}
-  {% set title = "Image" %}
-{% endblock variables %}
-
-{% block body %}
+{% import "components/breadcrumb.tera" as breadcrumb %} {% extends "layout.tera"
+%} {% block variables %} {% set title = "Image" %} {% endblock variables %} {%
+block body %}
 {{ breadcrumb::breadcrumb(dir_trail=dir_trail) }}
 
 <dialog id="new_label_modal" class="modal">
   <div class="modal-box">
     <h3 class="text-lg font-bold">Add Label</h3>
-    <form
-      method="POST"
-      action="/img/{{ image.id }}/label"
-    >
+    <form method="POST" action="/img/{{ image.id }}/label">
       <div class="modal-action flex-col px-4 pb-4 gap-4">
         <div></div>
         <label
           class="input input-bordered w-full flex font-bold items-center gap-2"
         >
           Name
-          <input name="name" id="name" type="text" class="grow font-normal" autocomplete="off" />
+          <input
+            name="name"
+            id="name"
+            type="text"
+            class="grow font-normal"
+            autocomplete="off"
+          />
+        </label>
+        <label
+          class="input input-bordered w-full flex font-bold items-center gap-2"
+        >
+          Value
+          <input
+            name="value"
+            id="value"
+            type="text"
+            class="grow font-normal"
+            autocomplete="off"
+          />
         </label>
         <button type="submit" class="btn w-full">Submit</button>
       </div>
@@ -67,7 +77,15 @@
       </div>
       <div class="flex flex-wrap gap-2 space-2 mt-2">
         {% for label in labels %}
-        <a class="badge badge-primary p-4" href="/img/{{ image.id }}/label/{{ label.id }}/delete">{{ label.name }}</a>
+        <a
+          class="badge badge-primary p-4"
+          href="/img/{{ image.id }}/label/{{ label.id }}/delete"
+        >
+          {{ label.name }}
+          <p class="ml-1 font-light">
+            {{ label.value }}
+          </p>
+        </a>
         {% else %}
         <p class="text-gray-500">No labels available.</p>
         {% endfor %}
@@ -77,7 +95,9 @@
 </div>
 
 <script>
-  document.getElementById("image-date").textContent = (new Date({{ image.created }} * 1000)).toLocaleString(undefined, { hour12: false })
+  document.getElementById("image-date").textContent = new Date(
+    "{{ image.created }}" * 1000
+  ).toLocaleString(undefined, { hour12: false });
 </script>
 
 {% endblock body %}
