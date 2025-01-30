@@ -19,7 +19,7 @@
     class="min-w-screen min-h-screen pb-4 bg-base-100"
     data-theme="retro"
   >
-    <div class="navbar bg-base-200 shadow-lg fixed z-10">
+    <div id="navbar" class="navbar bg-base-200 shadow-lg fixed z-10">
       <div class="navbar-start">
         <div class="dropdown">
           <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
@@ -54,7 +54,9 @@
       </div>
 
       <div class="navbar-center">
-        <a href="/home" class="btn btn-ghost font-bold text-3xl">Photolabeler</a>
+        <a href="/home" class="btn btn-ghost font-bold text-3xl"
+          >Photolabeler</a
+        >
       </div>
 
       <div class="navbar-end">
@@ -117,7 +119,18 @@
           }
         } catch (error) {}
       };
+      // var prevScrollpos = window.pageYOffset;
+      // window.onscroll = function () {
+      //   var currentScrollPos = window.pageYOffset;
+      //   console.log(prevScrollpos - currentScrollPos);
+      //   if (prevScrollpos - currentScrollPos > 5) {
+      //     document.getElementById("navbar").style.top = "0";
+      //   } else if (prevScrollpos - currentScrollPos < -15) {
+      //     document.getElementById("navbar").style.top = "-48px";
+      //   }
+      //   prevScrollpos = currentScrollPos;
+      // };
     </script>
-    <div class="container pt-24">{% block body %}{% endblock body %}</div>
+    <div class="min-w-screen pt-24">{% block body %}{% endblock body %}</div>
   </body>
 </html>

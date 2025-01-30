@@ -4,7 +4,7 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
 {{ breadcrumb::breadcrumb(dir_trail=[]) }}
 
 <div
-  class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-4 m-4 mb-16"
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 m-4 mb-16"
 >
   {% for directory in directories %}
   <div
@@ -32,7 +32,7 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
         {{ directory.name }}
       </h2>
     </a>
-    <form action="/dir/{{ directory.id }}/delete" method="POST">
+    <form action="/home/dir/{{ directory.id }}/delete" method="POST">
       <button class="h-full flex hover:bg-base-300 p-4 items-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -77,7 +77,7 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
 <dialog id="new_folder_modal" class="modal">
   <div class="modal-box">
     <h3 class="text-lg font-bold text-center">Register a new folder</h3>
-    <form method="POST" action="/">
+    <form method="POST" action="/home/dir">
       <div class="modal-action flex-col px-4 pb-4 gap-4 space-x-0">
         <label class="input input-bordered flex font-bold items-center gap-2">
           Name
@@ -99,7 +99,10 @@ variables %} {% set title = "Home" %} {% endblock variables %} {% block body %}
             autocomplete="off"
           />
         </label>
-        <button type="submit" class="btn w-full">Submit</button>
+        <button type="submit" onclick="document.getElementById('new_folder_modal_submit').classList.remove('hidden')" class="btn w-full">
+          <span id="new_folder_modal_submit" class="hidden loading loading-spinner"></span>
+          Submit
+        </button>
       </div>
     </form>
   </div>

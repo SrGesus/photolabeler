@@ -5,7 +5,7 @@ dir.name %} {% endblock variables %} {% block body %}
 {{ breadcrumb::breadcrumb(dir_trail=dir_trail) }}
 
 <div
-  class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-4 m-4 mb-16"
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 m-4 mb-16"
 >
   {% for directory in directories %}
   <a href="/dir/{{ directory.id }}">

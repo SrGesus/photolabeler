@@ -7,10 +7,6 @@ CREATE TABLE IF NOT EXISTS Directory (
   path TEXT NOT NULL UNIQUE COLLATE NOCASE
 );
 
--- Temporary for development
-INSERT INTO Directory (name, path)
-VALUES ("images", "./images");
-
 CREATE TABLE IF NOT EXISTS Image (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   directory_id INTEGER NOT NULL,

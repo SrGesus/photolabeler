@@ -10,8 +10,9 @@ use crate::{error::Error, state::AppState};
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/", get(page).post(register_folder))
-        .route("/:id/delete", post(unregister_folder))
+        .route("/", get(page))
+        .route("/dir", post(register_folder))
+        .route("/dir/:id/delete", post(unregister_folder))
         .route("/images", get(all_images))
 }
 
@@ -63,9 +64,12 @@ pub async fn register_folder(
 ) -> Result<impl IntoResponse, Error> {
     state
         .register_directory(f.path, Some(f.name).filter(|v| !v.is_empty()))
-        .await?;
+        .await.map_err(|err| {
+            tracing::error!("{}", err);
+            err
+        })?;
 
-    Ok(Redirect::to("/"))
+    Ok(Redirect::to("/home"))
 }
 
 pub async fn unregister_folder(
@@ -73,5 +77,5 @@ pub async fn unregister_folder(
     Path(id): Path<i64>,
 ) -> Result<impl IntoResponse, Error> {
     state.unregister_directory(id).await?;
-    Ok(Redirect::to("/"))
+    Ok(Redirect::to("/home"))
 }
